@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { RULE_VERSION, runToEnd } from '../../src/match.js';
 
-it('keeps the golden replay stable for rule version 0.3.1', () => {
+it('keeps the golden replay stable for rule version 0.4.0', () => {
   const result = runToEnd({
     seed: 42,
     version: RULE_VERSION,
@@ -30,7 +30,7 @@ it('keeps the golden replay stable for rule version 0.3.1', () => {
     finalHash: result.finalHash,
   }).toMatchInlineSnapshot(`
     {
-      "finalHash": "9dc0fc82",
+      "finalHash": "420f0f35",
       "reason": "timeout",
       "ticks": 1800,
       "winner": "A",

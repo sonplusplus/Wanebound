@@ -14,7 +14,8 @@ Dùng đúng các tên này trong code, dữ liệu và tên file.
 | Đội hình | `lineup` | 3 quái chính + 1 viện trợ + vị trí |
 | Đặt quân | `deployment` | bước đặt vị trí trước trận |
 | Trận | `match` | |
-| Hazard (thiên tai ngũ hành) | `hazard` | chỉ có trong PvP |
+| Hazard (thiên tai) | `hazard` | chỉ có trong PvP; gồm thiên tai ngũ hành và loại trung tính |
+| Map / chiến trường | `map` | PvP chọn bằng seed; hiệu ứng MVP áp dụng cho cả hai đội |
 | Ải / chương | `stage` / `chapter` | PvE |
 | Cấp / bậc / sao | `level` / `tier` / `star` | sao đến từ quái trùng |
 | Độ hiếm | `rarity` | `R` `SR` `SSR` `UR` |

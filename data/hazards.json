@@ -48,5 +48,16 @@
     "activeOverlay": "#b98a48",
     "trail": "crack",
     "effect": { "type": "range_mod", "amount": -1, "min": 1 }
+  },
+  {
+    "id": "ice_field",
+    "element": "water",
+    "name": "Sân băng",
+    "target": "all",
+    "vfx": "ice_field_field",
+    "warnOverlay": "#a9def4",
+    "activeOverlay": "#a9def4",
+    "trail": "ripple",
+    "effect": { "type": "stat_mod", "stat": "aspd", "pct": -0.2 }
   }
 ]

@@ -1,4 +1,4 @@
-# Rule v0.3.1 — Luật game
+# Rule v0.4.0 — Luật game
 
 Nguồn sự thật duy nhất cho luật và số liệu. Giá trị ghi "khởi điểm" sẽ được chỉnh bằng bot mô phỏng (TASKS M5).
 
@@ -8,10 +8,13 @@ Thay đổi v0.3: bàn hex axial, tương sinh tăng ASPD, hazard 1–3 lần, h
 
 Thay đổi v0.3.1: ngưỡng năng lượng dùng active tăng từ 100 lên 200 theo Q16.
 
+Thay đổi v0.4.0: thêm Sân băng và hai map PvP có hiệu ứng chung theo Q17–Q18.
+
 ## 1. Trận đấu
 - Thời gian thực, mô phỏng cố định 10 tick/giây (1 tick = 0,1 giây), tối đa 180 giây (1800 tick).
 - Người chơi chọn đội và đặt quân trước trận. Trong trận quái tự đánh, không có điều khiển.
 - Bàn 7 cột × 5 hàng, ô lục giác đỉnh nhọn theo tọa độ axial `q=x, r=y`, x 0..6, y 0..4. Phe A đặt quân ở cột 0-2, phe B ở cột 4-6, cột 3 trung lập. Code đặt sau interface `Grid`.
+- PvP chọn map bằng seed chung và công bố trước khi đặt quân. Hỏa Diệm Sơn tăng 5% sát thương do cả hai đội gây ra; Thủy Liêm Động tăng 5% lượng hồi máu thực nhận của cả hai đội. Hazard vẫn chạy độc lập theo mục 7. PvE dùng map cố định theo ải.
 - Mỗi phe có 3 quái chính + 1 viện trợ.
 
 ## 2. Chỉ số
@@ -60,7 +63,7 @@ Quy tắc mỗi tick:
 - Chọn sau khi đã thấy 3 quái chính của đối thủ (xem mục 9).
 
 ## 7. Hazard (chỉ PvP)
-- Mỗi trận chọn 1–3 hazard bằng seed; thời điểm kích hoạt trong khoảng 60–120 giây, không chồng nhau. Cả hai bên thấy loại và thời điểm từ bước đặt quân. Có thể lặp hành; nếu hai hazard liên tiếp cùng loại, xác suất loại đó ở lượt kế tiếp giảm một nửa, phần còn lại chia đều bốn loại khác (giá trị thử nghiệm).
+- Mỗi trận chọn 1–3 hazard bằng seed; thời điểm kích hoạt trong khoảng 60–120 giây, không chồng nhau. Cả hai bên thấy loại và thời điểm từ bước đặt quân. Có thể lặp loại; nếu hai hazard liên tiếp cùng loại, xác suất loại đó ở lượt kế tiếp giảm một nửa, phần còn lại chia đều cho các loại khác (giá trị thử nghiệm).
 - Cảnh báo đếm ngược hiện từ 10 giây trước. Mỗi hazard kéo dài 6 giây.
 - Hazard hành X tác động lên quân có hành mà X khắc, với hiệu ứng:
 
@@ -71,6 +74,7 @@ Quy tắc mỗi tick:
 | Thủy | nước lũ | quân Hỏa | tốc độ tích năng lượng −50% |
 | Hỏa | hỏa hoạn | quân Kim | mất 8% HP tối đa mỗi giây |
 | Thổ | bão cát | quân Thủy | tầm đánh −1 (tối thiểu 1) |
+| Trung tính | sân băng | cả hai đội | ASPD −20% |
 
 - Khiên hấp thụ sát thương hazard như sát thương thường.
 
@@ -83,7 +87,7 @@ Quy tắc mỗi tick:
 ## 9. Quy trình trước trận (PvP)
 Realtime:
 1. Chọn 3 quái chính (20 giây). Khóa đồng thời, lộ cho đối thủ.
-2. Hiện hazard của trận (seed chung do server cấp). Chọn viện trợ (không trùng 3 chính) và đặt vị trí 3 quái chính trên nửa sân mình (30 giây). Hai bên không thấy vị trí của nhau. Hết giờ hoặc bấm khóa thì chốt; quân chưa đặt được xếp tự động.
+2. Hiện map và hazard của trận (seed chung do server cấp). Chọn viện trợ (không trùng 3 chính) và đặt vị trí 3 quái chính trên nửa sân mình (30 giây). Hai bên không thấy vị trí của nhau. Hết giờ hoặc bấm khóa thì chốt; quân chưa đặt được xếp tự động.
 3. Tiết lộ 3 giây, rồi chiến đấu.
 
 Bất đồng bộ:

@@ -9,7 +9,7 @@ it('validates all active and hazard VFX references', () => {
     defaultGameData.skills,
     defaultGameData.hazards,
   );
-  expect(vfx).toHaveLength(10);
+  expect(vfx).toHaveLength(11);
   expect(
     vfx.every(
       (item) => item.layers.reduce((sum, layer) => sum + layer.count, 0) <= 300,

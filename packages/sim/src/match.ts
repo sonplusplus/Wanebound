@@ -3,7 +3,7 @@ import { defaultGameData } from './default-data.js';
 import { hexGrid, type Position } from './grid.js';
 import { SeededRng } from './rng.js';
 
-export const RULE_VERSION = '0.3.1';
+export const RULE_VERSION = '0.4.0';
 export const MAX_ENERGY = 200;
 export type Side = 'A' | 'B';
 export type Winner = Side | 'draw';
@@ -64,6 +64,7 @@ export interface MatchState {
   tick: number;
   units: UnitState[];
   hazards: HazardSchedule[];
+  mapId: string | null;
   events: MatchEvent[];
   hashes: { tick: number; hash: string }[];
   score: Record<Side, { damageDealt: number; healDone: number }>;
@@ -72,6 +73,7 @@ export interface MatchState {
   reason?: 'elimination' | 'timeout';
 }
 export interface MatchResult {
+  mapId: string | null;
   winner: Winner;
   reason: 'elimination' | 'timeout';
   ticks: number;
@@ -116,20 +118,30 @@ export function damageAmount(
   );
 }
 
-function chooseHazard(rng: SeededRng, elements: string[]): number {
+function chooseHazard(
+  rng: SeededRng,
+  history: number[],
+  count: number,
+): number {
   if (
-    elements.length < 2 ||
-    elements[elements.length - 1] !== elements[elements.length - 2]
+    history.length < 2 ||
+    history[history.length - 1] !== history[history.length - 2]
   )
-    return rng.int(5);
-  const repeated = elements[elements.length - 1];
-  const pick = rng.next() * 5;
+    return rng.int(count);
+  const repeated = history[history.length - 1];
+  const pick = rng.next();
   let cumulative = 0;
-  for (let i = 0; i < 5; i++) {
-    cumulative += i === Number(repeated) ? 0.5 : 1.125;
+  for (let i = 0; i < count; i++) {
+    cumulative +=
+      i === repeated ? 0.5 / count : (1 - 0.5 / count) / (count - 1);
     if (pick < cumulative) return i;
   }
-  return 4;
+  return count - 1;
+}
+
+export function selectMap(seed: number, data: GameData): string {
+  const rng = new SeededRng((seed ^ 0x6d6170) >>> 0);
+  return data.maps[rng.int(data.maps.length)]!.id;
 }
 
 export function scheduleHazards(
@@ -147,10 +159,10 @@ export function scheduleHazards(
       times.push(candidate);
   }
   times.sort((a, b) => a - b);
-  const elements: string[] = [];
+  const history: number[] = [];
   return times.map((startTick) => {
-    const index = chooseHazard(rng, elements);
-    elements.push(String(index));
+    const index = chooseHazard(rng, history, data.hazards.length);
+    history.push(index);
     const hazard = data.hazards[index];
     if (!hazard) throw new Error('Missing hazard');
     return {
@@ -226,6 +238,7 @@ export function createMatch(config: MatchConfig): MatchState {
     tick: 0,
     units,
     hazards: config.mode === 'pvp' ? scheduleHazards(config.seed, data) : [],
+    mapId: config.mode === 'pvp' ? selectMap(config.seed, data) : null,
     events: [],
     hashes: [],
     score: {
@@ -252,6 +265,10 @@ function cloneUnits(units: UnitState[]): UnitState[] {
 
 function defOf(state: MatchState, unit: UnitState): UnitDef {
   return state.data.units.find((def) => def.id === unit.unitId)!;
+}
+function mapBonus(state: MatchState, type: 'damage_mod' | 'heal_mod'): number {
+  const effect = state.data.maps.find((map) => map.id === state.mapId)?.effect;
+  return effect?.type === type ? 1 + effect.pct : 1;
 }
 function skillOf(
   state: MatchState,
@@ -327,18 +344,17 @@ function stat(
     )
       value *= 1.15;
   }
-  const activeHazard = state.hazards.find(
-    (hazard) =>
-      state.tick >= hazard.startTick &&
-      state.tick < hazard.endTick &&
-      counters[
-        state.data.hazards.find((item) => item.id === hazard.id)!.element
-      ] === defOf(state, unit).element,
-  );
-  if (activeHazard) {
-    const effect = state.data.hazards.find(
-      (item) => item.id === activeHazard.id,
-    )!.effect;
+  for (const hazard of state.hazards) {
+    if (state.tick < hazard.startTick || state.tick >= hazard.endTick) continue;
+    const definition = state.data.hazards.find(
+      (item) => item.id === hazard.id,
+    )!;
+    if (
+      definition.target !== 'all' &&
+      counters[definition.element] !== defOf(state, unit).element
+    )
+      continue;
+    const effect = definition.effect;
     if (effect.type === 'stat_mod' && name === effect.stat)
       value *= 1 + effect.pct;
     if (effect.type === 'range_mod' && name === 'range')
@@ -479,7 +495,15 @@ function cast(
             defOf(state, victim).element,
           ),
         );
-        pending.push({ source, target: victim, type: 'damage', amount });
+        pending.push({
+          source,
+          target: victim,
+          type: 'damage',
+          amount: Math.max(
+            1,
+            Math.floor(amount * mapBonus(state, 'damage_mod')),
+          ),
+        });
       }
     if (effect.type === 'heal') {
       const chosen =
@@ -599,7 +623,8 @@ function basicAttack(
         amount *
           (reduction?.type === 'basic_damage_reduction'
             ? 1 - reduction.pct
-            : 1),
+            : 1) *
+          mapBonus(state, 'damage_mod'),
       ),
     ),
     basic: true,
@@ -647,7 +672,8 @@ function applyPending(
     } else if (action.type === 'heal') {
       healing.set(
         action.target.id,
-        (healing.get(action.target.id) ?? 0) + action.amount,
+        (healing.get(action.target.id) ?? 0) +
+          Math.floor(action.amount * mapBonus(state, 'heal_mod')),
       );
     } else if (action.type === 'shield') {
       shield.set(
@@ -836,7 +862,9 @@ export function step(state: MatchState): void {
       if (def.effect.type === 'damage_max_hp_per_second')
         for (const unit of snapshot.filter(
           (item) =>
-            item.alive && counters[def.element] === defOf(state, item).element,
+            item.alive &&
+            (def.target === 'all' ||
+              counters[def.element] === defOf(state, item).element),
         )) {
           pending.push({
             source: unit,
@@ -929,6 +957,7 @@ export function stateHash(state: MatchState): string {
     units: state.units,
     score: state.score,
     spawned: state.spawned,
+    mapId: state.mapId,
     winner: state.winner,
   });
   let hash = 2166136261;
@@ -941,6 +970,7 @@ export function runToEnd(config: MatchConfig): MatchResult {
   const state = createMatch(config);
   while (!state.winner) step(state);
   return {
+    mapId: state.mapId,
     winner: state.winner!,
     reason: state.reason!,
     ticks: state.tick,

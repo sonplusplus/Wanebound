@@ -27,7 +27,7 @@ const directions = [
 ] as const;
 
 export function boardPoint(x: number, y: number): { x: number; y: number } {
-  return { x: 72 + x * 69 + y * 34, y: 72 + y * 87 };
+  return { x: 64 + x * 74 + y * 37, y: 120 + y * 64.5 };
 }
 
 function noise(seed: number): number {

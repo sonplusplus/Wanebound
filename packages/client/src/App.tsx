@@ -14,6 +14,7 @@ const hazardNames: Record<string, string> = {
   flood: vi.flood,
   wildfire: vi.wildfire,
   sandstorm: vi.sandstorm,
+  ice_field: vi.ice_field,
 };
 const eventNames: Record<string, string> = {
   Attack: 'Tấn công',
@@ -164,6 +165,11 @@ export function App() {
             <div>
               <span className="eyebrow">TRẬN THỬ · SEED 42</span>
               <h2>{vi.battlefield}</h2>
+              <span className="eyebrow">
+                {demoResult.mapId === 'flaming_mountain'
+                  ? vi.flaming_mountain
+                  : vi.water_curtain_cave}
+              </span>
             </div>
             <div className="clock">
               {(playhead / 10).toFixed(1)} <span>/ 180.0 s</span>
@@ -177,6 +183,7 @@ export function App() {
               tick={playhead}
               events={motionEvents}
               hazards={hazards}
+              mapId={demoResult.mapId}
             />
             {warningHazard && (
               <div className="hazard-overlay warning">

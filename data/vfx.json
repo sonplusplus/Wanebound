@@ -158,5 +158,13 @@
       }
     ],
     "telegraph": { "color": "#b98a48", "duration": 10 }
+  },
+  {
+    "id": "ice_field_field",
+    "element": "water",
+    "layers": [
+      { "type": "particles", "count": 90, "shape": "shard", "speed": [35, 90], "life": 0.8, "color": "#a9def4", "blend": "add" }
+    ],
+    "telegraph": { "color": "#a9def4", "duration": 10 }
   }
 ]

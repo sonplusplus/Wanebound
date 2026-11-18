@@ -52,3 +52,19 @@ Trả lời: Đồng ý thử. Tự động xóa nền và xuất WebP để ki�
 
 **Q16. Ngưỡng năng lượng để dùng active tăng từ 100 lên bao nhiêu?**
 Trả lời: 200 để giảm tốc độ ra chiêu; chạy lại bot để đánh giá, chỉnh tiếp ở M5 nếu cần.
+
+## Đã chốt bổ sung cho map và hazard PvP
+
+**Q17. Sân băng là map hay hazard, tác động bao lâu và lên ai?**
+Trả lời: Hazard mới kéo dài 6 giây, giảm 20% ASPD của cả hai đội. Tham gia bộ chọn 1–3 hazard/trận; công bố từ bước đặt quân và cảnh báo 10 giây trước khi kích hoạt. Số liệu để thử nghiệm cân bằng.
+
+**Q18. Map PvP có hiệu ứng vùng riêng hay hiệu ứng chung?**
+Trả lời: MVP dùng hiệu ứng chung, áp dụng như nhau cho cả hai đội. Hai map đầu: Hỏa Diệm Sơn +5% sát thương gây ra; Thủy Liêm Động +5% lượng hồi máu thực nhận. Map do seed chọn, công bố trước bước đặt quân. Hiệu ứng vùng để nghiên cứu sau MVP.
+
+## Cần quyết định trước khi mở rộng nội dung
+
+**Q19. Sau Sân băng, hazard nào nên thêm tiếp và tác động cụ thể ra sao?**
+Gợi ý chưa triển khai: sấm sét làm gián đoạn tích năng lượng, sương mù giảm tầm nhìn/tầm đánh, hoặc động đất thay đổi vị trí quân. Cần chốt mục tiêu, cường độ và tính công bằng giữa hai đội trước khi đưa vào `data/hazards.json`.
+
+**Q20. Map PvP tiếp theo dùng bối cảnh nào và hiệu ứng chung nào?**
+Hai map MVP đã chốt ở Q18. Map hiệu ứng theo vùng được hoãn sau MVP; trước khi làm cần chốt vùng, mức ảnh hưởng và cách hiển thị để người chơi đọc được.

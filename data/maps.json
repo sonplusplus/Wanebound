@@ -1,0 +1,4 @@
+[
+  { "id": "flaming_mountain", "name": "Hỏa Diệm Sơn", "effect": { "type": "damage_mod", "pct": 0.05 } },
+  { "id": "water_curtain_cave", "name": "Thủy Liêm Động", "effect": { "type": "heal_mod", "pct": 0.05 } }
+]

@@ -6,6 +6,7 @@ import {
   elementMultiplier,
   runToEnd,
   scheduleHazards,
+  selectMap,
   step,
   type MatchConfig,
 } from '../src/match.js';
@@ -128,6 +129,86 @@ describe('match', () => {
         ),
       ).toBe(true);
     }
+  });
+
+  it('selects a PvP map deterministically from validated data', () => {
+    const selected = new Set<string>();
+    for (const seed of [0, 1, 2, 3, 42, 12345, 0xffffffff]) {
+      const state = createMatch({ ...config, seed });
+      expect(state.mapId).toBe(selectMap(seed, defaultGameData));
+      expect(defaultGameData.maps.some((map) => map.id === state.mapId)).toBe(
+        true,
+      );
+      selected.add(state.mapId!);
+    }
+    expect(selected.size).toBe(2);
+    expect(createMatch({ ...config, mode: 'pve' }).mapId).toBeNull();
+  });
+
+  it('applies the ice field attack speed penalty to both teams', () => {
+    const clear = createMatch(config);
+    const icy = createMatch(config);
+    clear.hazards = [];
+    icy.hazards = [{ id: 'ice_field', warnTick: 0, startTick: 1, endTick: 61 }];
+    for (const state of [clear, icy]) {
+      state.units.find((unit) => unit.id === 'A0_sun_wukong')!.position = {
+        x: 3,
+        y: 0,
+      };
+      state.units.find((unit) => unit.id === 'B0_bull_demon')!.position = {
+        x: 4,
+        y: 0,
+      };
+      step(state);
+    }
+    for (const id of ['A0_sun_wukong', 'B0_bull_demon'])
+      expect(
+        icy.units.find((unit) => unit.id === id)!.nextAttackTick,
+      ).toBeGreaterThan(
+        clear.units.find((unit) => unit.id === id)!.nextAttackTick,
+      );
+  });
+
+  it('applies the map damage bonus to both teams', () => {
+    const plain = createMatch(config);
+    const mountain = createMatch(config);
+    plain.mapId = 'water_curtain_cave';
+    mountain.mapId = 'flaming_mountain';
+    for (const state of [plain, mountain]) {
+      state.hazards = [];
+      state.units.find((unit) => unit.id === 'A0_sun_wukong')!.position = {
+        x: 3,
+        y: 0,
+      };
+      state.units.find((unit) => unit.id === 'B0_bull_demon')!.position = {
+        x: 4,
+        y: 0,
+      };
+      step(state);
+    }
+    for (const id of ['A0_sun_wukong', 'B0_bull_demon'])
+      expect(mountain.units.find((unit) => unit.id === id)!.hp).toBeLessThan(
+        plain.units.find((unit) => unit.id === id)!.hp,
+      );
+  });
+
+  it('increases actual healing for both teams in Water Curtain Cave', () => {
+    const plain = createMatch(config);
+    const cave = createMatch(config);
+    plain.mapId = 'flaming_mountain';
+    cave.mapId = 'water_curtain_cave';
+    for (const state of [plain, cave]) {
+      state.hazards = [];
+      state.tick = 49;
+      for (const unit of state.units) {
+        unit.nextAttackTick = 100;
+        if (unit.side === 'A') unit.hp -= 500;
+        if (unit.side === 'B') unit.hp -= 500;
+      }
+      step(state);
+    }
+    expect(cave.score.A.healDone).toBeGreaterThan(plain.score.A.healDone);
+    expect(cave.score.B.healDone).toBeGreaterThan(plain.score.B.healDone);
   });
 
   it('settles timeout by real damage and healing score', () => {

@@ -26,33 +26,61 @@ const colors: Record<Element, number> = {
 };
 
 function point(x: number, y: number): { x: number; y: number } {
-  return { x: 72 + x * 69 + y * 34, y: 72 + y * 87 };
+  return { x: 64 + x * 74 + y * 37, y: 120 + y * 64.5 };
 }
 
-function drawGrid(graphics: Graphics): void {
+function drawGrid(graphics: Graphics, mapId: string | null): void {
   graphics.clear();
-  graphics.rect(0, 0, 700, 500).fill(0x111b24);
+  // A single terrain surface sits beneath the tactical hex overlay.
+  const fiery = mapId === 'flaming_mountain';
+  graphics.rect(0, 0, 700, 500).fill(fiery ? 0x60443a : 0x3c5350);
+  graphics
+    .rect(0, 0, 700, 72)
+    .fill({ color: fiery ? 0x492b30 : 0x244852, alpha: 0.55 });
+  graphics
+    .rect(0, 428, 700, 72)
+    .fill({ color: fiery ? 0x492b30 : 0x244852, alpha: 0.55 });
+  if (fiery) {
+    graphics
+      .moveTo(0, 430)
+      .bezierCurveTo(170, 360, 240, 490, 390, 420)
+      .bezierCurveTo(530, 345, 605, 440, 700, 380)
+      .stroke({ color: 0xdc763f, alpha: 0.43, width: 18 });
+  } else {
+    graphics
+      .moveTo(0, 75)
+      .bezierCurveTo(160, 15, 260, 155, 410, 80)
+      .bezierCurveTo(550, 12, 620, 98, 700, 48)
+      .stroke({ color: 0x70b6ba, alpha: 0.47, width: 26 });
+  }
+  for (let i = 0; i < 38; i++) {
+    const x = (i * 173 + 41) % 700;
+    const y = (i * 97 + 23) % 500;
+    graphics
+      .circle(x, y, 2 + (i % 3))
+      .fill({ color: fiery ? 0xefab62 : 0x9be2d8, alpha: 0.17 });
+  }
   for (let y = 0; y < 5; y++) {
     for (let x = 0; x < 7; x++) {
       const center = point(x, y);
-      const fill = x < 3 ? 0x1e3540 : x > 3 ? 0x382a36 : 0x29353b;
+      const fill = x < 3 ? 0x6aa9ae : x > 3 ? 0xd08a70 : 0xb4a773;
       graphics
         .poly([
           center.x,
           center.y - 43,
-          center.x + 36,
-          center.y - 21,
-          center.x + 36,
-          center.y + 21,
+          center.x + 37,
+          center.y - 21.5,
+          center.x + 37,
+          center.y + 21.5,
           center.x,
           center.y + 43,
-          center.x - 36,
-          center.y + 21,
-          center.x - 36,
-          center.y - 21,
+          center.x - 37,
+          center.y + 21.5,
+          center.x - 37,
+          center.y - 21.5,
         ])
-        .fill({ color: fill, alpha: 0.92 })
-        .stroke({ color: 0x60717a, alpha: 0.42, width: 1 });
+        .fill({ color: fill, alpha: 0.075 })
+        .stroke({ color: 0xdde6d2, alpha: 0.38, width: 1 });
     }
   }
 }
@@ -132,6 +160,7 @@ interface BoardProps {
   tick: number;
   events: MatchEvent[];
   hazards: HazardSchedule[];
+  mapId: string | null;
 }
 
 export function Board({
@@ -141,6 +170,7 @@ export function Board({
   tick,
   events,
   hazards,
+  mapId,
 }: BoardProps) {
   const host = useRef<HTMLDivElement>(null);
   const layer = useRef<Graphics | null>(null);
@@ -267,7 +297,7 @@ export function Board({
         const units = new Graphics();
         const effects = new Graphics();
         app.stage.addChild(grid, spriteLayer, units, effects);
-        drawGrid(grid);
+        drawGrid(grid, mapId);
         layer.current = units;
         vfxLayer.current = effects;
         spriteLayerRef.current = spriteLayer;
@@ -294,7 +324,7 @@ export function Board({
       sprites.current.clear();
       if (app.renderer) app.destroy(true, { children: true });
     };
-  }, []);
+  }, [mapId]);
 
   useEffect(() => {
     render();

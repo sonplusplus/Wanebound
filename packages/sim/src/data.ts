@@ -119,6 +119,7 @@ export const hazardSchema = z
     id: idSchema,
     element: elementSchema,
     name: z.string().min(1),
+    target: z.enum(['countered_element', 'all']).optional(),
     vfx: idSchema.optional(),
     warnOverlay: z
       .string()
@@ -136,7 +137,7 @@ export const hazardSchema = z
       z
         .object({
           type: z.literal('stat_mod'),
-          stat: z.enum(['spd']),
+          stat: z.enum(['spd', 'aspd']),
           pct: z.number().finite().min(-1).max(0),
         })
         .strict(),
@@ -153,6 +154,17 @@ export const hazardSchema = z
           min: positive,
         })
         .strict(),
+    ]),
+  })
+  .strict();
+
+export const mapSchema = z
+  .object({
+    id: idSchema,
+    name: z.string().min(1),
+    effect: z.discriminatedUnion('type', [
+      z.object({ type: z.literal('damage_mod'), pct: fraction }).strict(),
+      z.object({ type: z.literal('heal_mod'), pct: fraction }).strict(),
     ]),
   })
   .strict();
@@ -190,6 +202,7 @@ export type Role = z.infer<typeof roleSchema>;
 export type UnitDef = z.infer<typeof unitSchema>;
 export type SkillDef = z.infer<typeof skillSchema>;
 export type HazardDef = z.infer<typeof hazardSchema>;
+export type MapDef = z.infer<typeof mapSchema>;
 export type VfxDef = z.infer<typeof vfxSchema>;
 
 export function loadVfxData(
@@ -221,12 +234,14 @@ export interface GameData {
   units: UnitDef[];
   skills: SkillDef[];
   hazards: HazardDef[];
+  maps: MapDef[];
 }
 
 export function loadGameData(input: {
   units: unknown;
   skills: unknown;
   hazards: unknown;
+  maps: unknown;
 }): GameData {
   const units = uniqueIds(z.array(unitSchema).parse(input.units), 'unit');
   const skills = uniqueIds(z.array(skillSchema).parse(input.skills), 'skill');
@@ -234,6 +249,7 @@ export function loadGameData(input: {
     z.array(hazardSchema).parse(input.hazards),
     'hazard',
   );
+  const maps = uniqueIds(z.array(mapSchema).min(1).parse(input.maps), 'map');
   const skillById = new Map(skills.map((skill) => [skill.id, skill]));
   for (const unit of units) {
     if (skillById.get(unit.passive)?.kind !== 'passive')
@@ -242,9 +258,13 @@ export function loadGameData(input: {
       throw new Error(`Invalid active for ${unit.id}: ${unit.active}`);
   }
   for (const element of elementSchema.options) {
-    if (hazards.filter((hazard) => hazard.element === element).length !== 1) {
+    if (
+      hazards.filter(
+        (hazard) => hazard.element === element && hazard.target !== 'all',
+      ).length !== 1
+    ) {
       throw new Error(`Expected exactly one hazard for ${element}`);
     }
   }
-  return { units, skills, hazards };
+  return { units, skills, hazards, maps };
 }

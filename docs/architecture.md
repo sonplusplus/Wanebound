@@ -5,7 +5,7 @@
 ngu-hanh/
   AGENTS.md  CLAUDE.md
   docs/
-  data/            units.json skills.json hazards.json vfx.json stages.json banners.json progression.json
+  data/            units.json skills.json hazards.json maps.json vfx.json stages.json banners.json progression.json
   tools/           export_assets.py (xóa nền, cắt, scale, xuất WebP)
   assets/
     characters/<id>/  concept.png và nguồn nhân vật (commit)
@@ -29,8 +29,8 @@ createMatch(config: MatchConfig): MatchState
 step(state: MatchState): void              // 1 tick, thay đổi state tại chỗ
 runToEnd(config: MatchConfig): MatchResult // chạy hết trận, trả log và kết quả
 ```
-`MatchConfig`: `{ seed, lineupA, lineupB, hazard?, mode: 'pvp' | 'pve', version }`.
-`MatchResult`: `{ winner: 'A'|'B'|'draw', reason, ticks, score: {A,B}, events, hashes, finalHash }`, với `score` gồm `damageDealt` và `healDone` theo `rule.md` §8.
+`MatchConfig`: `{ seed, lineupA, lineupB, mode: 'pvp' | 'pve', version }`. PvP chọn map và 1–3 hazard bằng seed trên server.
+`MatchResult`: `{ mapId, winner: 'A'|'B'|'draw', reason, ticks, score: {A,B}, events, hashes, finalHash }`, với `score` gồm `damageDealt` và `healDone` theo `rule.md` §8.
 
 ### Xác định (determinism) — bắt buộc
 - Chỉ dùng RNG có seed (mulberry32). Cấm `Date.now`, `Math.random`.
@@ -91,7 +91,7 @@ Ví dụ `units.json` (một phần tử):
   "passive": "huo_yan_jin_jing", "active": "jin_gu_bang",
   "art": { "portrait": "units/sun_wukong/portrait.webp", "battle": "units/sun_wukong/battle.webp", "icon": "units/sun_wukong/icon.webp" } }
 ```
-`hazards.json`, `stages.json`, `banners.json`, `progression.json`, `vfx.json` theo cùng cách: mỗi file là mảng đối tượng có `id`, schema đặt cạnh loader trong sim. Hai effect cuối phục vụ passive trong roster; `adjacent_enemies_min` có thêm `radius`.
+`hazards.json`, `maps.json`, `stages.json`, `banners.json`, `progression.json`, `vfx.json` theo cùng cách: mỗi file là mảng đối tượng có `id`, schema đặt cạnh loader trong sim. Hazard có `target: 'all'` cho Sân băng; thiếu trường này mặc định chỉ tác động lên hành bị khắc. Map PvP có `effect` loại `damage_mod` hoặc `heal_mod`, áp dụng đồng đều cho hai đội. Hai effect cuối phục vụ passive trong roster; `adjacent_enemies_min` có thêm `radius`.
 
 ## 5. Server (M7 trở đi)
 - Server quyết định mọi kết quả: client gửi lựa chọn (đội, vị trí), không bao giờ gửi kết quả trận.

@@ -1,7 +1,7 @@
 # Design v0.2 — Ngũ Hành Chiến (Tây Du / Hồng Hoang)
 
 ## 1. Tổng quan
-Game web tactical thời gian thực trên bàn cờ ô vuông. Người chơi chọn đội (3 quái chính + 1 viện trợ) và đặt quân; trận bắt đầu thì quái tự đánh. Lõi chiến thuật là ngũ hành (sinh/khắc) kết hợp nghề, vị trí đặt quân và hazard báo trước. Có sưu tầm quái bằng gacha, đi ải PvE có cốt truyện và PvP xếp hạng. Free-to-play, không bán sức mạnh. Nền web, responsive (máy tính và trình duyệt điện thoại).
+Game web tactical thời gian thực trên bàn cờ hex lục giác. Người chơi chọn đội (3 quái chính + 1 viện trợ) và đặt quân; trận bắt đầu thì quái tự đánh. Lõi chiến thuật là ngũ hành (sinh/khắc) kết hợp nghề, vị trí đặt quân và hazard báo trước. Có sưu tầm quái bằng gacha, đi ải PvE có cốt truyện và PvP xếp hạng. Free-to-play, không bán sức mạnh. Nền web, responsive (máy tính và trình duyệt điện thoại).
 
 Cảm hứng cấu trúc: *Tactical Monsters Rumble Arena* (trận ngắn, vị trí quan trọng), nhưng đây là thời gian thực và tự đánh, không theo lượt.
 
@@ -24,7 +24,7 @@ Cảm hứng cấu trúc: *Tactical Monsters Rumble Arena* (trận ngắn, vị 
 ## 5. Map
 - Asset map do AI vẽ rồi lưu sẵn, không sinh lúc chạy. Layout ô đi được định nghĩa bằng dữ liệu, AI vẽ nền khớp layout.
 - PvE: map cố định theo ải, không hazard.
-- PvP: map lấy ngẫu nhiên trong tập đã duyệt; có 1 hazard ngũ hành theo seed (xem `rule.md` §7).
+- PvP: map lấy ngẫu nhiên theo seed trong tập đã duyệt. MVP có Hỏa Diệm Sơn (+5% sát thương cho cả hai đội) và Thủy Liêm Động (+5% hồi máu thực nhận cho cả hai đội). Có 1–3 hazard theo seed; Sân băng ảnh hưởng ASPD của cả hai bên (xem `rule.md` §7).
 - Về sau: map thuần hành, map hỗn hợp theo vùng, bộ map theo Can của ngày (Giáp/Ất Mộc, Bính/Đinh Hỏa, Mậu/Kỷ Thổ, Canh/Tân Kim, Nhâm/Quý Thủy).
 
 ## 6. Tiến trình và kinh tế (tóm tắt, chi tiết ở `rule.md`)

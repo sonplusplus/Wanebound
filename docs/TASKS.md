@@ -64,12 +64,15 @@ Ghi chú M2: Trang xem trận seed 42 đọc `Snapshot` từ event log, nội su
 - [x] Hoạt ảnh tween (đứng, chạy, đánh, trúng đòn, chết, viện trợ xuất hiện) theo `skill_animation.md` §5.
 - [x] Hệ thống VFX particle đọc `data/vfx.json`; làm telegraph, impact, aftermath cho 5 active và 5 hazard.
 - [x] Giới hạn hạt cho điện thoại.
+- [x] Bàn đấu nền liền mạch, thêm Sân băng và hai map PvP có hiệu ứng chung được chọn theo seed.
 - [ ] Xác nhận hiệu năng trên điện thoại tầm trung thật theo tiêu chí nghiệm thu.
 
 **Nghiệm thu:** 5 quái hiện đúng sprite; mỗi active có hiệu ứng nhận ra được hành; hazard có overlay, hiệu ứng và dấu vết; trận chạy ổn định trên điện thoại tầm trung.
 
 Ghi chú M3: Đã xuất 5 bộ WebP thử từ concept, nạp sprite và vẽ particle theo dữ liệu; preview màn hẹp hiển thị hazard Hỏa, overlay và đếm ngược. Ảnh còn mây/vòng tròn bên trong nét vẽ và portrait/icon chỉ là crop tạm, cần dọn hoặc vẽ lại trước bản phát hành.
 Ngưỡng năng lượng tăng lên 200 (rule v0.3.1); bot 300 trận còn 92,7% hết giờ, trung bình 177 giây. Dùng Pillow trong `.venv` riêng cho lệnh export; M3 chưa được xác nhận hiệu năng trên điện thoại tầm trung thật.
+Mở rộng theo Q17–Q18: Sân băng giảm 20% ASPD hai đội trong 6 giây; Hỏa Diệm Sơn +5% sát thương, Thủy Liêm Động +5% hồi máu. Bàn hex nay phủ lên một mặt địa hình liền; đã xem trực tiếp trên preview `15173`.
+Rule v0.4.0; `pnpm test` (18 test), `pnpm typecheck`, lint và Vite build qua. Bot 300 trận: 92,0% hết giờ, trung bình 176,8 giây; cần cân bằng ở M5. Vẫn cần đo hiệu năng trên điện thoại tầm trung thật để khép M3.
 
 ## M4 — Khung giao diện game
 - [ ] Router và bố cục responsive.
