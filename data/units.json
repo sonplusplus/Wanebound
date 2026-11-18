@@ -1,1 +1,112 @@
-[]
+[
+  {
+    "id": "sun_wukong",
+    "name": "Tôn Ngộ Không",
+    "element": "metal",
+    "role": "warrior",
+    "rarity": "SSR",
+    "stats": {
+      "hp": 3000,
+      "atk": 78,
+      "def": 20,
+      "spd": 2.4,
+      "range": 1,
+      "aspd": 1.1
+    },
+    "passive": "huo_yan_jin_jing",
+    "active": "jin_gu_bang",
+    "art": {
+      "portrait": "units/sun_wukong/portrait.webp",
+      "battle": "units/sun_wukong/battle.webp",
+      "icon": "units/sun_wukong/icon.webp"
+    }
+  },
+  {
+    "id": "zhenyuan",
+    "name": "Trấn Nguyên Đại Tiên",
+    "element": "wood",
+    "role": "support",
+    "rarity": "SR",
+    "stats": {
+      "hp": 3400,
+      "atk": 40,
+      "def": 25,
+      "spd": 1.6,
+      "range": 3,
+      "aspd": 0.8
+    },
+    "passive": "sheng_ji",
+    "active": "ren_shen_guo",
+    "art": {
+      "portrait": "units/zhenyuan/portrait.webp",
+      "battle": "units/zhenyuan/battle.webp",
+      "icon": "units/zhenyuan/icon.webp"
+    }
+  },
+  {
+    "id": "sha_wujing",
+    "name": "Sa Tăng",
+    "element": "water",
+    "role": "tank",
+    "rarity": "SR",
+    "stats": {
+      "hp": 5400,
+      "atk": 45,
+      "def": 55,
+      "spd": 1.4,
+      "range": 1,
+      "aspd": 0.9
+    },
+    "passive": "jing_shui",
+    "active": "liu_sha_he",
+    "art": {
+      "portrait": "units/sha_wujing/portrait.webp",
+      "battle": "units/sha_wujing/battle.webp",
+      "icon": "units/sha_wujing/icon.webp"
+    }
+  },
+  {
+    "id": "ne_zha",
+    "name": "Na Tra",
+    "element": "fire",
+    "role": "warrior",
+    "rarity": "SSR",
+    "stats": {
+      "hp": 3200,
+      "atk": 74,
+      "def": 22,
+      "spd": 2.2,
+      "range": 1,
+      "aspd": 1.1
+    },
+    "passive": "phong_hoa_luan",
+    "active": "hoa_tiem_thuong",
+    "art": {
+      "portrait": "units/ne_zha/portrait.webp",
+      "battle": "units/ne_zha/battle.webp",
+      "icon": "units/ne_zha/icon.webp"
+    }
+  },
+  {
+    "id": "bull_demon",
+    "name": "Ngưu Ma Vương",
+    "element": "earth",
+    "role": "warrior",
+    "rarity": "SSR",
+    "stats": {
+      "hp": 4600,
+      "atk": 65,
+      "def": 40,
+      "spd": 1.7,
+      "range": 1,
+      "aspd": 0.9
+    },
+    "passive": "niu_pi",
+    "active": "zhen_di",
+    "art": {
+      "portrait": "units/bull_demon/portrait.webp",
+      "battle": "units/bull_demon/battle.webp",
+      "icon": "units/bull_demon/icon.webp"
+    }
+  }
+]

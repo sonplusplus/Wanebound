@@ -1,13 +1,15 @@
-# Rule v0.2 — Luật game
+# Rule v0.3 — Luật game
 
 Nguồn sự thật duy nhất cho luật và số liệu. Giá trị ghi "khởi điểm" sẽ được chỉnh bằng bot mô phỏng (TASKS M5).
 
 Thay đổi so với v0.1: chuyển từ theo lượt sang thời gian thực; thêm nghề; thêm chuẩn hóa PvP; hòa tính theo % máu đã mất; sinh áp dụng giữa đồng đội; thêm quy trình trước trận.
 
+Thay đổi v0.3: bàn hex axial, tương sinh tăng ASPD, hazard 1–3 lần, hết giờ phân định theo sát thương và hồi máu, Na Tra thay Hồng Hài Nhi trong vertical slice.
+
 ## 1. Trận đấu
 - Thời gian thực, mô phỏng cố định 10 tick/giây (1 tick = 0,1 giây), tối đa 180 giây (1800 tick).
 - Người chơi chọn đội và đặt quân trước trận. Trong trận quái tự đánh, không có điều khiển.
-- Bàn 7 cột × 5 hàng, ô vuông, x 0..6, y 0..4. Phe A đặt quân ở cột 0-2, phe B ở cột 4-6, cột 3 trung lập. (Vuông hay hex: xem QUESTIONS Q1; code đặt sau interface `Grid`.)
+- Bàn 7 cột × 5 hàng, ô lục giác đỉnh nhọn theo tọa độ axial `q=x, r=y`, x 0..6, y 0..4. Phe A đặt quân ở cột 0-2, phe B ở cột 4-6, cột 3 trung lập. Code đặt sau interface `Grid`.
 - Mỗi phe có 3 quái chính + 1 viện trợ.
 
 ## 2. Chỉ số
@@ -32,14 +34,14 @@ Quy tắc mỗi tick:
 3. Mục tiêu ngoài tầm: di chuyển thẳng về phía mục tiêu với tốc độ SPD, không vượt quá khoảng cách còn lại. Chưa có va chạm giữa các quân ở v0.2 (xem TASKS M5).
 4. Trong tầm và hết hồi đòn: tấn công, hoặc dùng skill active nếu đủ năng lượng. Hồi đòn = 1 / ASPD giây.
 5. Quân bị khiêu khích (taunt) buộc chọn kẻ khiêu khích làm mục tiêu nếu kẻ đó còn trong bán kính taunt.
-6. Khoảng cách là Euclid tính bằng ô, không dùng `Math.hypot` (xem architecture.md).
+6. Khoảng cách là số bước hex ngắn nhất giữa hai tọa độ axial, không dùng `Math.hypot` (xem architecture.md). 
 
 ## 4. Ngũ hành
 - 4.1 Khắc: Kim khắc Mộc, Mộc khắc Thổ, Thổ khắc Thủy, Thủy khắc Hỏa, Hỏa khắc Kim.
 - 4.2 Sinh: Kim sinh Thủy, Thủy sinh Mộc, Mộc sinh Hỏa, Hỏa sinh Thổ, Thổ sinh Kim.
 - 4.3 Giữa kẻ địch: bên khắc gây ×1,20 sát thương lên bên bị khắc; bên bị khắc gây ×0,85 lên bên khắc (khởi điểm, nằm trong khoảng 15-20%). Cùng hành hoặc quan hệ sinh: ×1,00.
 - 4.4 Giữa đồng đội (kề nhau ≤ 1,5 ô):
-  - "Được sinh": có đồng minh kề mà hành của họ sinh ra hành của mình ⇒ +15% tốc độ tích năng lượng.
+  - "Được sinh": có đồng minh kề mà hành của họ sinh ra hành của mình ⇒ +15% tốc độ tích năng lượng và +15% tốc độ đánh.
   - "Đi sinh": có đồng minh kề mà hành của mình sinh ra hành của họ ⇒ −10% tốc độ tích năng lượng (hao).
   - Mỗi chiều tính tối đa một lần. (khởi điểm, xem QUESTIONS Q2)
 
@@ -56,8 +58,8 @@ Quy tắc mỗi tick:
 - Chọn sau khi đã thấy 3 quái chính của đối thủ (xem mục 9).
 
 ## 7. Hazard (chỉ PvP)
-- Mỗi trận 1 hazard (khởi điểm), hành và thời điểm sinh từ seed. Thời điểm kích hoạt nằm trong khoảng 60-120 giây.
-- Cả hai bên thấy hazard (loại và thời điểm) ngay từ bước đặt quân. Cảnh báo đếm ngược hiện từ 10 giây trước. Hazard kéo dài 6 giây. Không có hazard thứ hai chồng lên.
+- Mỗi trận chọn 1–3 hazard bằng seed; thời điểm kích hoạt trong khoảng 60–120 giây, không chồng nhau. Cả hai bên thấy loại và thời điểm từ bước đặt quân. Có thể lặp hành; nếu hai hazard liên tiếp cùng loại, xác suất loại đó ở lượt kế tiếp giảm một nửa, phần còn lại chia đều bốn loại khác (giá trị thử nghiệm).
+- Cảnh báo đếm ngược hiện từ 10 giây trước. Mỗi hazard kéo dài 6 giây.
 - Hazard hành X tác động lên quân có hành mà X khắc, với hiệu ứng:
 
 | Hazard | Tên | Tác động lên | Hiệu ứng (khởi điểm) |
@@ -73,7 +75,7 @@ Quy tắc mỗi tick:
 ## 8. Điều kiện thắng
 - Thắng khi tiêu diệt toàn bộ đội đối phương (kể cả viện trợ đã xuất hiện).
 - Cả hai phe cùng bị diệt trong một tick: hòa.
-- Hết 180 giây: so tỉ lệ máu đã mất. `lostPct = Σ(maxHP − max(0, HP)) / ΣmaxHP`, tính trên các quân đã ra sân (viện trợ chỉ tính nếu đã xuất hiện). Khiên không tính là máu. Bên có `lostPct` thấp hơn thắng; chênh dưới 0,1 điểm phần trăm là hòa.
+- Hết 180 giây: tính điểm `damageDealt + healDone × 0,5`, chỉ tính sát thương thực nhận và hồi máu thực tế. Bên điểm cao hơn thắng; chênh dưới 0,1% tổng HP tối đa của hai đội là hòa. Đây là công thức thử nghiệm, điều chỉnh sau chạy bot M5.
 - PvE: hết giờ tính là thua.
 
 ## 9. Quy trình trước trận (PvP)

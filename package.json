@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "pnpm --filter @ngu-hanh/client dev",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "pnpm -r --if-present typecheck",
+    "typecheck": "pnpm -r --if-present typecheck && tsc --project tools/tsconfig.json",
     "lint": "eslint .",
     "format": "prettier --check eslint.config.mjs package.json tsconfig.base.json packages tools",
-    "sim:bot": "node tools/sim-bot-placeholder.mjs"
+    "sim:bot": "tsx tools/sim-bot.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
@@ -17,6 +17,7 @@
     "prettier": "^3.0.0",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0",
+    "tsx": "^4.0.0",
     "vitest": "^3.0.0"
   }
 }

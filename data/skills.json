@@ -1,1 +1,85 @@
-[]
+[
+  {
+    "id": "huo_yan_jin_jing",
+    "kind": "passive",
+    "name": "Hỏa Nhãn Kim Tinh",
+    "trigger": { "when": "target_hp_below", "value": 0.5 },
+    "effects": [{ "type": "damage_bonus", "pct": 0.15 }]
+  },
+  {
+    "id": "jin_gu_bang",
+    "kind": "active",
+    "name": "Kim Cô Bổng",
+    "effects": [{ "type": "damage", "mult": 2.5, "area": "target" }]
+  },
+  {
+    "id": "sheng_ji",
+    "kind": "passive",
+    "name": "Sinh Cơ",
+    "trigger": { "when": "interval", "value": 5 },
+    "effects": [{ "type": "heal", "pct": 0.015, "target": "all_allies" }]
+  },
+  {
+    "id": "ren_shen_guo",
+    "kind": "active",
+    "name": "Nhân Sâm Quả",
+    "effects": [{ "type": "heal", "pct": 0.25, "target": "lowest_ally" }]
+  },
+  {
+    "id": "jing_shui",
+    "kind": "passive",
+    "name": "Tĩnh Thủy",
+    "trigger": { "when": "always" },
+    "effects": [{ "type": "basic_damage_reduction", "pct": 0.1 }]
+  },
+  {
+    "id": "liu_sha_he",
+    "kind": "active",
+    "name": "Lưu Sa Hà",
+    "effects": [
+      { "type": "shield", "pct": 0.3, "duration": 4 },
+      { "type": "taunt", "duration": 3, "radius": 2 }
+    ]
+  },
+  {
+    "id": "phong_hoa_luan",
+    "kind": "passive",
+    "name": "Phong Hỏa Luân",
+    "trigger": { "when": "self_hp_below", "value": 0.5 },
+    "effects": [{ "type": "stat_mod", "stat": "spd", "pct": 0.2 }]
+  },
+  {
+    "id": "hoa_tiem_thuong",
+    "kind": "active",
+    "name": "Hỏa Tiêm Thương",
+    "effects": [
+      { "type": "damage", "mult": 2, "area": "target" },
+      { "type": "slow", "pct": 0.3, "duration": 2, "area": "target" }
+    ]
+  },
+  {
+    "id": "niu_pi",
+    "kind": "passive",
+    "name": "Da Trâu",
+    "trigger": { "when": "adjacent_enemies_min", "value": 2, "radius": 1.5 },
+    "effects": [{ "type": "stat_mod", "stat": "def", "pct": 0.1 }]
+  },
+  {
+    "id": "zhen_di",
+    "kind": "active",
+    "name": "Chấn Địa",
+    "effects": [
+      {
+        "type": "damage",
+        "mult": 1.3,
+        "area": { "radius": 1.5, "around": "self" }
+      },
+      {
+        "type": "slow",
+        "pct": 0.3,
+        "duration": 2,
+        "area": { "radius": 1.5, "around": "self" }
+      }
+    ]
+  }
+]

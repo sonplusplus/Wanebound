@@ -8,7 +8,7 @@ Chỉ số là chỉ số PvP chuẩn, giá trị khởi điểm lấy từ bả
 | `sun_wukong` | Tôn Ngộ Không | Kim | chiến binh | SSR | 3000 | 78 | 20 | 2.4 | 1 | 1.1 |
 | `zhenyuan` | Trấn Nguyên Đại Tiên | Mộc | hỗ trợ | SR | 3400 | 40 | 25 | 1.6 | 3 | 0.8 |
 | `sha_wujing` | Sa Tăng | Thủy | tank | SR | 5400 | 45 | 55 | 1.4 | 1 | 0.9 |
-| `red_boy` | Hồng Hài Nhi | Hỏa | pháp sư | SSR | 2600 | 70 | 15 | 1.8 | 3 | 0.9 |
+| `ne_zha` | Na Tra | Hỏa | chiến binh | SSR | 3200 | 74 | 22 | 2.2 | 1 | 1.1 |
 | `bull_demon` | Ngưu Ma Vương | Thổ | chiến binh (hạng nặng) | SSR | 4600 | 65 | 40 | 1.7 | 1 | 0.9 |
 
 ## 2. Skill
@@ -17,7 +17,7 @@ Chỉ số là chỉ số PvP chuẩn, giá trị khởi điểm lấy từ bả
 | `sun_wukong` | Hỏa Nhãn Kim Tinh (`huo_yan_jin_jing`): gây thêm 15% sát thương lên mục tiêu dưới 50% HP | Kim Cô Bổng (`jin_gu_bang`): 250% sát thương lên 1 mục tiêu |
 | `zhenyuan` | Sinh Cơ (`sheng_ji`): mỗi 5 giây hồi 1,5% HP tối đa cho cả đội | Nhân Sâm Quả (`ren_shen_guo`): hồi 25% HP tối đa cho đồng minh có % máu thấp nhất |
 | `sha_wujing` | Tĩnh Thủy (`jing_shui`): giảm 10% sát thương nhận từ đòn thường | Lưu Sa Hà (`liu_sha_he`): khiên 30% HP tối đa trong 4 giây, khiêu khích địch trong bán kính 2 ô trong 3 giây |
-| `red_boy` | Nộ Hỏa (`nu_huo`): +20% ATK khi HP dưới 50% | Tam Muội Chân Hỏa (`san_mei_zhen_huo`): 140% sát thương diện rộng bán kính 1,5 quanh mục tiêu |
+| `ne_zha` | Phong Hỏa Luân (`phong_hoa_luan`): +20% SPD khi HP dưới 50% | Hỏa Tiêm Thương (`hoa_tiem_thuong`): 200% sát thương lên 1 mục tiêu và làm chậm 30% SPD trong 2 giây |
 | `bull_demon` | Da Trâu (`niu_pi`): +10% DEF khi có từ 2 địch trở lên trong bán kính 1,5 | Chấn Địa (`zhen_di`): 130% sát thương diện rộng bán kính 1,5 quanh bản thân, làm chậm 30% SPD trong 2 giây |
 
 ## 3. Art

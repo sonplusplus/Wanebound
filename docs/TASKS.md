@@ -3,6 +3,7 @@
 Quy tắc: làm đúng một mục mỗi lần, theo thứ tự. Đọc tiêu chí nghiệm thu trước khi code. Xong thì đánh dấu `[x]` và ghi 2-3 dòng ghi chú dưới mục. Gặp luật thiếu hoặc mâu thuẫn: dừng và ghi vào `QUESTIONS.md`.
 
 ## Việc của người dùng (không giao agent)
+- Ảnh nguồn đã nhận ngày 18/11/2026: `zhenyuan`, `sha_wujing`, `bull_demon`, `ne_zha`, `sun_wukong` nằm trong `assets/characters/<id>/concept.png`. Vẫn cần xử lý nền và xuất WebP để dùng trong trận.
 - [ ] Dọn nền 5 ảnh còn sót (vòng tròn, mây), xuất sprite theo `art_style.md` §5, đặt vào `assets/processed/`.
 - [ ] Vẽ chân dung gacha 3:4 và icon cho 5 quái.
 - [ ] Vẽ texture hiệu ứng 5 hành (nền đen) và 2 nền map thử.
@@ -21,26 +22,29 @@ Ghi chú M0: Đã tạo workspace, cấu hình strict TypeScript, Vitest, ESLint
 **Nghiệm thu:** `pnpm install && pnpm test && pnpm typecheck` chạy qua trên máy sạch.
 
 ## M1 — Lõi mô phỏng (packages/sim)
-- [ ] Kiểu dữ liệu và loader có validate (zod) cho `units`, `skills`, `hazards`; tạo `data/units.json`, `data/skills.json`, `data/hazards.json` từ `roster.md` và `rule.md` §7.
-- [ ] RNG có seed (mulberry32) kèm test.
-- [ ] Interface `Grid` (ô vuông 7×5) và hàm khoảng cách không dùng `Math.hypot`.
-- [ ] Vòng lặp tick: đọc đầu tick, áp cuối tick, thứ tự đơn vị ổn định (`rule.md` §3).
-- [ ] Chọn mục tiêu theo nghề, di chuyển, đòn thường, công thức sát thương, hệ số khắc (`rule.md` §2-4.3).
-- [ ] Năng lượng và skill active; khung passive theo `trigger`; các effect `damage`, `heal`, `shield`, `taunt`, `slow`, `stat_mod`.
-- [ ] Hiệu ứng sinh giữa đồng đội (`rule.md` §4.4).
-- [ ] Viện trợ (`rule.md` §6).
-- [ ] Hazard 5 loại theo seed, cảnh báo 10 giây, kéo dài 6 giây (`rule.md` §7).
-- [ ] Điều kiện thắng và hết giờ tính `lostPct` (`rule.md` §8).
-- [ ] Event log và `stateHash` mỗi 10 tick.
-- [ ] CLI `pnpm sim:bot -- --n 300`: lineup ngẫu nhiên, in tỉ lệ thắng theo quái, hành, nghề, thời lượng trung bình, % hết giờ, % hòa; xuất CSV.
+- [x] Kiểu dữ liệu và loader có validate (zod) cho `units`, `skills`, `hazards`; tạo `data/units.json`, `data/skills.json`, `data/hazards.json` từ `roster.md` và `rule.md` §7.
+- [x] RNG có seed (mulberry32) kèm test.
+- [x] Interface `Grid` (hex đỉnh nhọn, axial 7×5) và hàm khoảng cách hex không dùng `Math.hypot`.
+- [x] Vòng lặp tick: đọc đầu tick, áp cuối tick, thứ tự đơn vị ổn định (`rule.md` §3).
+- [x] Chọn mục tiêu theo nghề, di chuyển, đòn thường, công thức sát thương, hệ số khắc (`rule.md` §2-4.3).
+- [x] Năng lượng và skill active; khung passive theo `trigger`; các effect `damage`, `heal`, `shield`, `taunt`, `slow`, `stat_mod`.
+- [x] Hiệu ứng sinh giữa đồng đội (`rule.md` §4.4).
+- [x] Viện trợ (`rule.md` §6).
+- [x] Hazard 5 loại theo seed, 1–3 lần trong 60–120 giây không chồng nhau, cảnh báo 10 giây, kéo dài 6 giây (`rule.md` §7).
+- [x] Điều kiện thắng và hết giờ phân định theo `damageDealt + healDone × 0,5` (`rule.md` §8).
+- [x] Event log và `stateHash` mỗi 10 tick.
+- [x] CLI `pnpm sim:bot -- --n 300`: lineup ngẫu nhiên, in tỉ lệ thắng theo quái, hành, nghề, thời lượng trung bình, % hết giờ, % hòa; xuất CSV.
 
 **Nghiệm thu:**
 - Chạy cùng config hai lần cho `finalHash` trùng nhau (test).
 - Khắc gây ×1,20, bị khắc gây ×0,85, cùng hành ×1,00 (test).
 - Viện trợ xuất hiện đúng một lần, đúng vị trí, bất tử 1,5 giây (test).
 - `HazardWarn` phát ra 10 giây trước `HazardStart` (test).
-- Hết giờ tính đúng `lostPct` và hòa khi chênh dưới 0,1 điểm phần trăm (test).
+- Hết giờ tính đúng công thức được chốt ở Q13 (test).
 - `pnpm sim:bot -- --n 300` chạy xong và in bảng kết quả.
+
+Ghi chú M1: Đã dựng sim xác định theo tick, 5 quái/10 skill/5 hazard, replay và golden hash; `pnpm test` (13 test), `pnpm typecheck`, `pnpm sim:bot -- --n 300` chạy qua.
+Bot thử 300 trận có 98,7% hết giờ và thời lượng trung bình 179,6 giây; cần phân tích/cân bằng ở M5. Dùng zod theo kiến trúc và thêm tsx nhỏ để chạy CLI TypeScript, không đưa Node API vào sim.
 
 ## M2 — Hiển thị bàn đấu (packages/client)
 - [ ] Vite + React + PixiJS, bàn 7×5 co theo chiều rộng, giữ tỉ lệ 7:5.
@@ -70,7 +74,7 @@ Ghi chú M0: Đã tạo workspace, cấu hình strict TypeScript, Vitest, ESLint
 **Nghiệm thu:** chơi được một trận với bot cục bộ từ chọn đội đến kết quả, trên cả điện thoại và máy tính.
 
 ## M5 — Chất lượng mô phỏng và cân bằng
-- [ ] Va chạm mềm giữa các quân (tách nhau, không đứng chồng).
+- [ ] Va chạm cứng giữa các quân (không đi xuyên hoặc đứng chồng; khi bị chặn thì đứng lại đánh).
 - [ ] Giảm giật khi đổi mục tiêu (trễ chọn lại).
 - [ ] Chạy bot nhiều lượt, ghi báo cáo cân bằng vào `docs/balance_report.md`.
 - [ ] Đề xuất chỉnh số (không tự sửa `rule.md`; gửi đề xuất để người dùng duyệt).

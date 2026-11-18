@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": "sword_rain",
+    "element": "metal",
+    "name": "Mưa kiếm",
+    "effect": { "type": "damage_max_hp_per_second", "pct": 0.08 }
+  },
+  {
+    "id": "vines",
+    "element": "wood",
+    "name": "Dây leo",
+    "effect": { "type": "stat_mod", "stat": "spd", "pct": -0.4 }
+  },
+  {
+    "id": "flood",
+    "element": "water",
+    "name": "Nước lũ",
+    "effect": { "type": "energy_gain_mod", "pct": -0.5 }
+  },
+  {
+    "id": "wildfire",
+    "element": "fire",
+    "name": "Hỏa hoạn",
+    "effect": { "type": "damage_max_hp_per_second", "pct": 0.08 }
+  },
+  {
+    "id": "sandstorm",
+    "element": "earth",
+    "name": "Bão cát",
+    "effect": { "type": "range_mod", "amount": -1, "min": 1 }
+  }
+]

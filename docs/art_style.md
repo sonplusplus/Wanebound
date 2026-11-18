@@ -57,7 +57,7 @@ Quy tắc xuất sprite: scale theo **chiều cao thân** để các quái cùng
 2. Ghép style lock + prompt âm, cùng model, CFG và khổ ảnh với ảnh neo.
 3. Tạo 2-4 ảnh, chọn ảnh gần ảnh neo nhất. Nếu có Fixed Seed hoặc ảnh tham chiếu, dùng để kéo về cùng gu.
 4. Ghi vào `prompts.md`: model, phiên bản, seed, CFG, khổ, prompt đầy đủ, license, ngày.
-5. Xóa nền (rembg hoặc công cụ của nền tảng), dọn bằng Krita, xuất theo bảng ở mục 5.
+5. Ảnh người dùng cung cấp lưu ở `assets/characters/<id>/concept.png`; xóa nền (rembg hoặc công cụ của nền tảng), dọn bằng Krita, xuất theo bảng ở mục 5 vào `packages/client/public/units/<id>/`.
 6. Chạy checklist mục 7.
 
 ## 7. Checklist đồng nhất (chạy sau mỗi 5 quái mới)

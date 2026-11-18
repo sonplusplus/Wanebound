@@ -8,8 +8,11 @@ ngu-hanh/
   data/            units.json skills.json hazards.json vfx.json stages.json banners.json progression.json
   tools/           export_assets.py (xóa nền, cắt, scale, xuất WebP)
   assets/
-    raw/           ảnh AI thô (không commit)
-    processed/     đã xóa nền, chưa nén
+    characters/<id>/  concept.png và nguồn nhân vật (commit)
+    vfx/              texture hiệu ứng kỹ năng
+    hazards/          texture/overlay thiên tai
+    maps/             nền bản đồ
+    ui/               hình giao diện dùng chung
   packages/
     sim/           lõi chiến đấu, TypeScript thuần
     client/        Vite + React + PixiJS
@@ -27,7 +30,7 @@ step(state: MatchState): void              // 1 tick, thay đổi state tại ch
 runToEnd(config: MatchConfig): MatchResult // chạy hết trận, trả log và kết quả
 ```
 `MatchConfig`: `{ seed, lineupA, lineupB, hazard?, mode: 'pvp' | 'pve', version }`.
-`MatchResult`: `{ winner: 'A'|'B'|'draw', reason, ticks, lostPct: {A,B}, events, finalHash }`.
+`MatchResult`: `{ winner: 'A'|'B'|'draw', reason, ticks, score: {A,B}, events, hashes, finalHash }`, với `score` gồm `damageDealt` và `healDone` theo `rule.md` §8.
 
 ### Xác định (determinism) — bắt buộc
 - Chỉ dùng RNG có seed (mulberry32). Cấm `Date.now`, `Math.random`.
@@ -39,7 +42,7 @@ runToEnd(config: MatchConfig): MatchResult // chạy hết trận, trả log và
 
 ### Sự kiện (events)
 Sim phát sự kiện theo tick để client hiển thị và để phát lại:
-`Move`, `Attack`, `Cast`, `Damage`, `Heal`, `ShieldGain`, `Death`, `ReinforcementSpawn`, `HazardWarn`, `HazardStart`, `HazardEnd`, `MatchEnd`.
+`Move`, `Attack`, `Cast`, `Damage`, `Heal`, `ShieldGain`, `Death`, `ReinforcementSpawn`, `HazardWarn`, `HazardStart`, `HazardEnd`, `MatchEnd`, `Snapshot`.
 Mỗi sự kiện có `tick` và các id liên quan. Phát lại = `config` + `seed` + `version`, chạy lại sim.
 
 ## 3. Client
@@ -76,7 +79,9 @@ type Effect =
   | { type: 'shield'; pct: number; duration: number }
   | { type: 'taunt'; duration: number; radius: number }
   | { type: 'slow'; pct: number; duration: number; area: Area }
-  | { type: 'stat_mod'; stat: 'atk'|'def'|'spd'|'range'; pct: number; duration?: number };
+  | { type: 'stat_mod'; stat: 'atk'|'def'|'spd'|'range'|'aspd'; pct: number; duration?: number }
+  | { type: 'damage_bonus'; pct: number }
+  | { type: 'basic_damage_reduction'; pct: number };
 ```
 Ví dụ `units.json` (một phần tử):
 ```json
@@ -86,7 +91,7 @@ Ví dụ `units.json` (một phần tử):
   "passive": "huo_yan_jin_jing", "active": "jin_gu_bang",
   "art": { "portrait": "units/sun_wukong/portrait.webp", "battle": "units/sun_wukong/battle.webp", "icon": "units/sun_wukong/icon.webp" } }
 ```
-`hazards.json`, `stages.json`, `banners.json`, `progression.json`, `vfx.json` theo cùng cách: mỗi file là mảng đối tượng có `id`, schema đặt cạnh loader trong sim.
+`hazards.json`, `stages.json`, `banners.json`, `progression.json`, `vfx.json` theo cùng cách: mỗi file là mảng đối tượng có `id`, schema đặt cạnh loader trong sim. Hai effect cuối phục vụ passive trong roster; `adjacent_enemies_min` có thêm `radius`.
 
 ## 5. Server (M7 trở đi)
 - Server quyết định mọi kết quả: client gửi lựa chọn (đội, vị trí), không bao giờ gửi kết quả trận.
