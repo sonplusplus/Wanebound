@@ -1,0 +1,8 @@
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+assets/raw/
+*.tsbuildinfo
+.env*
+!.env.example
