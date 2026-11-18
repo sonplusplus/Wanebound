@@ -17,6 +17,10 @@ Mẫu:
 
 Lưu ý: ảnh tạo bằng model có nêu tên trong promp wukong hoặc model có điều khoản cấm thương mại là **bản thử**, phải vẽ lại trước khi phát hành (cổng G1 trong `art_style.md` §8).
 
+## Ảnh concept người dùng cung cấp cho M3 (18/11/2026)
+- `zhenyuan`, `sha_wujing`, `bull_demon`, `ne_zha`, `sun_wukong`: ảnh PNG do người dùng gửi, lưu ở `assets/characters/<id>/concept.png`.
+- Model, seed, prompt đầy đủ và license thương mại của các ảnh này chưa được xác nhận; WebP xuất bởi `tools/export_assets.py` chỉ dùng thử trong game, chưa qua cổng G1.
+
 ## sun_wukong — Tôn Ngộ Không (ảnh neo)
 - Prompt: 
 - Model, seed, CFG, khổ: WAI-illustrious-SDXL, seed 

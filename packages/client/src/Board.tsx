@@ -1,6 +1,21 @@
 import { useEffect, useRef } from 'react';
-import { Application, Graphics } from 'pixi.js';
-import { defaultGameData, type Element, type UnitState } from '@ngu-hanh/sim';
+import {
+  Application,
+  Assets,
+  Container,
+  Graphics,
+  Sprite,
+  type Texture,
+} from 'pixi.js';
+import {
+  defaultGameData,
+  MAX_ENERGY,
+  type Element,
+  type HazardSchedule,
+  type MatchEvent,
+  type UnitState,
+} from '@ngu-hanh/sim';
+import { renderVfx } from './Vfx';
 
 const colors: Record<Element, number> = {
   metal: 0xaab2c0,
@@ -48,6 +63,7 @@ function drawUnits(
   next: UnitState[],
   alpha: number,
   tick: number,
+  spritesReady: boolean,
 ): void {
   graphics.clear();
   const nextById = new Map(next.map((unit) => [unit.id, unit]));
@@ -64,16 +80,22 @@ function drawUnits(
     const def = defaultGameData.units.find((item) => item.id === unit.unitId)!;
     const color = colors[def.element];
     const teamColor = unit.side === 'A' ? 0x8bd3e8 : 0xffa0a0;
-    graphics
-      .circle(center.x, center.y + 3, 28)
-      .fill({ color: 0x000000, alpha: 0.28 });
-    graphics
-      .circle(center.x, center.y, 24)
-      .fill(color)
-      .stroke({ color: teamColor, width: 4 });
-    graphics
-      .circle(center.x - 7, center.y - 7, 6)
-      .fill({ color: 0xffffff, alpha: 0.3 });
+    if (spritesReady) {
+      graphics
+        .circle(center.x, center.y + 17, 22)
+        .stroke({ color: teamColor, alpha: 0.7, width: 2 });
+    } else {
+      graphics
+        .circle(center.x, center.y + 3, 28)
+        .fill({ color: 0x000000, alpha: 0.28 });
+      graphics
+        .circle(center.x, center.y, 24)
+        .fill(color)
+        .stroke({ color: teamColor, width: 4 });
+      graphics
+        .circle(center.x - 7, center.y - 7, 6)
+        .fill({ color: 0xffffff, alpha: 0.3 });
+    }
     const barX = center.x - 27;
     const barY = center.y - 41;
     graphics.roundRect(barX, barY, 54, 6, 3).fill(0x0a1018);
@@ -82,7 +104,13 @@ function drawUnits(
       .fill(0x78d77a);
     graphics.roundRect(barX, barY + 8, 54, 4, 2).fill(0x0a1018);
     graphics
-      .roundRect(barX, barY + 8, Math.max(0, (54 * unit.energy) / 100), 4, 2)
+      .roundRect(
+        barX,
+        barY + 8,
+        Math.max(0, (54 * unit.energy) / MAX_ENERGY),
+        4,
+        2,
+      )
       .fill(0x69a7ee);
     if (unit.shield > 0) {
       graphics
@@ -102,13 +130,126 @@ interface BoardProps {
   next: UnitState[];
   alpha: number;
   tick: number;
+  events: MatchEvent[];
+  hazards: HazardSchedule[];
 }
 
-export function Board({ current, next, alpha, tick }: BoardProps) {
+export function Board({
+  current,
+  next,
+  alpha,
+  tick,
+  events,
+  hazards,
+}: BoardProps) {
   const host = useRef<HTMLDivElement>(null);
   const layer = useRef<Graphics | null>(null);
-  const latest = useRef({ current, next, alpha, tick });
-  latest.current = { current, next, alpha, tick };
+  const vfxLayer = useRef<Graphics | null>(null);
+  const spriteLayerRef = useRef<Container | null>(null);
+  const textures = useRef(new Map<string, Texture>());
+  const sprites = useRef(new Map<string, Sprite>());
+  const latest = useRef({ current, next, alpha, tick, events, hazards });
+  latest.current = { current, next, alpha, tick, events, hazards };
+
+  const render = () => {
+    const frame = latest.current;
+    for (const unit of frame.current) {
+      if (sprites.current.has(unit.id)) continue;
+      const texture = textures.current.get(unit.unitId);
+      if (!texture || !spriteLayerRef.current) continue;
+      const sprite = new Sprite(texture);
+      sprite.anchor.set(0.5, 1);
+      sprite.scale.set(unit.side === 'B' ? -0.18 : 0.18, 0.18);
+      spriteLayerRef.current.addChild(sprite);
+      sprites.current.set(unit.id, sprite);
+    }
+    if (layer.current)
+      drawUnits(
+        layer.current,
+        frame.current,
+        frame.next,
+        frame.alpha,
+        frame.tick,
+        sprites.current.size > 0,
+      );
+    const nextById = new Map(frame.next.map((unit) => [unit.id, unit]));
+    for (const [id, sprite] of sprites.current) {
+      const unit = frame.current.find((item) => item.id === id);
+      if (!unit || !unit.alive) {
+        sprite.visible = false;
+        continue;
+      }
+      const following = nextById.get(id);
+      const x =
+        unit.position.x +
+        ((following?.position.x ?? unit.position.x) - unit.position.x) *
+          frame.alpha;
+      const y =
+        unit.position.y +
+        ((following?.position.y ?? unit.position.y) - unit.position.y) *
+          frame.alpha;
+      const center = point(x, y);
+      const attack = frame.events.find(
+        (event) =>
+          (event.type === 'Attack' || event.type === 'Cast') &&
+          event.sourceId === id &&
+          frame.tick >= event.tick &&
+          frame.tick < event.tick + 3,
+      );
+      let lungeX = 0;
+      let lungeY = 0;
+      if (attack) {
+        const target = frame.current.find(
+          (item) => item.id === attack.targetId,
+        );
+        if (target) {
+          const targetPoint = point(target.position.x, target.position.y);
+          const dx = targetPoint.x - center.x;
+          const dy = targetPoint.y - center.y;
+          const length = Math.sqrt(dx * dx + dy * dy) || 1;
+          const strength = 8 * (1 - (frame.tick - attack.tick) / 3);
+          lungeX = (dx / length) * strength;
+          lungeY = (dy / length) * strength;
+        }
+      }
+      const moving =
+        following &&
+        (following.position.x !== unit.position.x ||
+          following.position.y !== unit.position.y);
+      sprite.position.set(
+        center.x + lungeX,
+        center.y + 26 + lungeY - Math.sin(frame.tick * 0.35 + id.length) * 1.5,
+      );
+      sprite.rotation = moving ? (unit.side === 'A' ? 0.04 : -0.04) : 0;
+      sprite.alpha = frame.events.some(
+        (event) =>
+          event.type === 'Damage' &&
+          event.targetId === id &&
+          frame.tick >= event.tick &&
+          frame.tick < event.tick + 2,
+      )
+        ? 0.55
+        : 1;
+      if (following && !following.alive) sprite.alpha *= 1 - frame.alpha;
+      if (unit.reinforcement) {
+        const age = frame.tick - (unit.invulnerableUntil - 15);
+        if (age >= 0 && age < 3) {
+          sprite.y -= 18 * (1 - age / 3);
+          sprite.alpha *= age / 3;
+        }
+      }
+      sprite.visible = true;
+    }
+    if (vfxLayer.current)
+      renderVfx(
+        vfxLayer.current,
+        frame.tick,
+        frame.current,
+        frame.events.filter((event) => event.type === 'Cast'),
+        frame.hazards,
+        (host.current?.clientWidth ?? 700) < 600 ? 150 : 300,
+      );
+  };
 
   useEffect(() => {
     const app = new Application();
@@ -122,28 +263,42 @@ export function Board({ current, next, alpha, tick }: BoardProps) {
         }
         host.current?.appendChild(app.canvas);
         const grid = new Graphics();
+        const spriteLayer = new Container();
         const units = new Graphics();
-        app.stage.addChild(grid, units);
+        const effects = new Graphics();
+        app.stage.addChild(grid, spriteLayer, units, effects);
         drawGrid(grid);
         layer.current = units;
-        drawUnits(
-          units,
-          latest.current.current,
-          latest.current.next,
-          latest.current.alpha,
-          latest.current.tick,
-        );
+        vfxLayer.current = effects;
+        spriteLayerRef.current = spriteLayer;
+        render();
+        void Promise.allSettled(
+          defaultGameData.units.map(async (def) => ({
+            id: def.id,
+            texture: await Assets.load(`/${def.art.battle}`),
+          })),
+        ).then((loaded) => {
+          if (disposed) return;
+          for (const asset of loaded)
+            if (asset.status === 'fulfilled')
+              textures.current.set(asset.value.id, asset.value.texture);
+          render();
+        });
       });
     return () => {
       disposed = true;
       layer.current = null;
+      vfxLayer.current = null;
+      spriteLayerRef.current = null;
+      textures.current.clear();
+      sprites.current.clear();
       if (app.renderer) app.destroy(true, { children: true });
     };
   }, []);
 
   useEffect(() => {
-    if (layer.current) drawUnits(layer.current, current, next, alpha, tick);
-  }, [current, next, alpha, tick]);
+    render();
+  }, [current, next, alpha, tick, events, hazards]);
 
   return (
     <div

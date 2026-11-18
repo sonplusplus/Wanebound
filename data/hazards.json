@@ -3,30 +3,50 @@
     "id": "sword_rain",
     "element": "metal",
     "name": "Mưa kiếm",
+    "vfx": "sword_rain_field",
+    "warnOverlay": "#aab2c0",
+    "activeOverlay": "#aab2c0",
+    "trail": "slash",
     "effect": { "type": "damage_max_hp_per_second", "pct": 0.08 }
   },
   {
     "id": "vines",
     "element": "wood",
     "name": "Dây leo",
+    "vfx": "vines_field",
+    "warnOverlay": "#3f9d5b",
+    "activeOverlay": "#3f9d5b",
+    "trail": "vine",
     "effect": { "type": "stat_mod", "stat": "spd", "pct": -0.4 }
   },
   {
     "id": "flood",
     "element": "water",
     "name": "Nước lũ",
+    "vfx": "flood_field",
+    "warnOverlay": "#3b7fd8",
+    "activeOverlay": "#3b7fd8",
+    "trail": "ripple",
     "effect": { "type": "energy_gain_mod", "pct": -0.5 }
   },
   {
     "id": "wildfire",
     "element": "fire",
     "name": "Hỏa hoạn",
+    "vfx": "wildfire_field",
+    "warnOverlay": "#e4572e",
+    "activeOverlay": "#e4572e",
+    "trail": "scorch",
     "effect": { "type": "damage_max_hp_per_second", "pct": 0.08 }
   },
   {
     "id": "sandstorm",
     "element": "earth",
     "name": "Bão cát",
+    "vfx": "sandstorm_field",
+    "warnOverlay": "#b98a48",
+    "activeOverlay": "#b98a48",
+    "trail": "crack",
     "effect": { "type": "range_mod", "amount": -1, "min": 1 }
   }
 ]

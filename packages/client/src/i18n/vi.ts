@@ -1,6 +1,6 @@
 export const vi = {
   title: 'Ngũ Hành Chiến',
-  subtitle: 'Bản xem trận thử · M2',
+  subtitle: 'Bản xem trận thử · M3',
   battlefield: 'Chiến trường',
   paused: 'Tạm dừng',
   play: 'Phát',

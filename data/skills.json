@@ -10,6 +10,7 @@
     "id": "jin_gu_bang",
     "kind": "active",
     "name": "Kim Cô Bổng",
+    "vfx": "jin_gu_bang_impact",
     "effects": [{ "type": "damage", "mult": 2.5, "area": "target" }]
   },
   {
@@ -23,6 +24,7 @@
     "id": "ren_shen_guo",
     "kind": "active",
     "name": "Nhân Sâm Quả",
+    "vfx": "ren_shen_guo_impact",
     "effects": [{ "type": "heal", "pct": 0.25, "target": "lowest_ally" }]
   },
   {
@@ -36,6 +38,7 @@
     "id": "liu_sha_he",
     "kind": "active",
     "name": "Lưu Sa Hà",
+    "vfx": "liu_sha_he_impact",
     "effects": [
       { "type": "shield", "pct": 0.3, "duration": 4 },
       { "type": "taunt", "duration": 3, "radius": 2 }
@@ -52,6 +55,7 @@
     "id": "hoa_tiem_thuong",
     "kind": "active",
     "name": "Hỏa Tiêm Thương",
+    "vfx": "hoa_tiem_thuong_impact",
     "effects": [
       { "type": "damage", "mult": 2, "area": "target" },
       { "type": "slow", "pct": 0.3, "duration": 2, "area": "target" }
@@ -68,6 +72,7 @@
     "id": "zhen_di",
     "kind": "active",
     "name": "Chấn Địa",
+    "vfx": "zhen_di_impact",
     "effects": [
       {
         "type": "damage",

@@ -46,6 +46,9 @@ Trả lời: Dùng công thức đề xuất để thử nghiệm: `damageDealt 
 **Q14. Na Tra thay Hồng Hài Nhi trong 5 quái vertical slice hay là quái thứ sáu?** Ảnh Na Tra đã được đưa vào `assets/characters/ne_zha/concept.png`; `docs/roster.md` hiện chỉ có chỉ số và skill của Hồng Hài Nhi. Nếu Na Tra thay thế, cần chốt role, chỉ số và skill trước khi đưa vào M1.
 Trả lời: Na Tra thay Hồng Hài Nhi trong vertical slice. Đã duyệt bộ số liệu khởi điểm: Hỏa, chiến binh, SSR; HP 3200, ATK 74, DEF 22, SPD 2,2, RANGE 1, ASPD 1,1; passive Phong Hỏa Luân tăng 20% SPD khi dưới 50% HP; active Hỏa Tiêm Thương gây 200% sát thương 1 mục tiêu và làm chậm 30% trong 2 giây.
 
-## Cần chốt khi triển khai M3
+## Đã chốt bổ sung khi triển khai M3
 **Q15. Dùng 5 ảnh `assets/characters/<id>/concept.png` hiện tại làm sprite thử nghiệm, tự động xóa nền và xuất WebP cho M3 được không?** Nền trắng và các họa tiết mây/trăng có thể cần dọn tay sau bước tự động; nguồn model và license thương mại vẫn cần ghi trong `docs/prompts.md` trước cổng G1.
-Trả lời:
+Trả lời: Đồng ý thử. Tự động xóa nền và xuất WebP để kiểm tra trong M3; ảnh còn lỗi sẽ dọn tay sau.
+
+**Q16. Ngưỡng năng lượng để dùng active tăng từ 100 lên bao nhiêu?**
+Trả lời: 200 để giảm tốc độ ra chiêu; chạy lại bot để đánh giá, chỉnh tiếp ở M5 nếu cần.

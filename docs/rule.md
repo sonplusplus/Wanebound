@@ -1,10 +1,12 @@
-# Rule v0.3 — Luật game
+# Rule v0.3.1 — Luật game
 
 Nguồn sự thật duy nhất cho luật và số liệu. Giá trị ghi "khởi điểm" sẽ được chỉnh bằng bot mô phỏng (TASKS M5).
 
 Thay đổi so với v0.1: chuyển từ theo lượt sang thời gian thực; thêm nghề; thêm chuẩn hóa PvP; hòa tính theo % máu đã mất; sinh áp dụng giữa đồng đội; thêm quy trình trước trận.
 
 Thay đổi v0.3: bàn hex axial, tương sinh tăng ASPD, hazard 1–3 lần, hết giờ phân định theo sát thương và hồi máu, Na Tra thay Hồng Hài Nhi trong vertical slice.
+
+Thay đổi v0.3.1: ngưỡng năng lượng dùng active tăng từ 100 lên 200 theo Q16.
 
 ## 1. Trận đấu
 - Thời gian thực, mô phỏng cố định 10 tick/giây (1 tick = 0,1 giây), tối đa 180 giây (1800 tick).
@@ -13,7 +15,7 @@ Thay đổi v0.3: bàn hex axial, tương sinh tăng ASPD, hazard 1–3 lần, h
 - Mỗi phe có 3 quái chính + 1 viện trợ.
 
 ## 2. Chỉ số
-HP, ATK, DEF, SPD (ô/giây), RANGE (ô), ASPD (đòn/giây), Năng lượng 0-100.
+HP, ATK, DEF, SPD (ô/giây), RANGE (ô), ASPD (đòn/giây), Năng lượng 0-200.
 
 Sát thương = `max(1, ATK × skillMult × 100 / (100 + DEF) × elementMult)`.
 
@@ -47,7 +49,7 @@ Quy tắc mỗi tick:
 
 ## 5. Năng lượng và skill
 - Mỗi quái có 1 passive (luôn bật, kích hoạt theo điều kiện trong dữ liệu) và 1 active.
-- Năng lượng: +12 khi gây đòn thường trúng, +6 khi bị đòn trúng (không tính hazard). Đạt 100: lần hành động tấn công kế tiếp thay bằng active, năng lượng về 0.
+- Năng lượng: +12 khi gây đòn thường trúng, +6 khi bị đòn trúng (không tính hazard). Đạt 200: lần hành động tấn công kế tiếp thay bằng active, năng lượng về 0.
 - Active hồi máu chỉ dùng khi có đồng minh bị thương; nếu không thì đánh thường và giữ năng lượng.
 - Hiệu ứng skill mô tả bằng dữ liệu (architecture.md §4), không viết cứng.
 

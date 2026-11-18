@@ -27,6 +27,18 @@ const eventNames: Record<string, string> = {
 const visibleEvents = demoResult.events.filter(
   (event) => event.type in eventNames,
 );
+const motionByTick = new Map<number, MatchEvent[]>();
+for (const event of demoResult.events) {
+  if (
+    !['Attack', 'Cast', 'Damage', 'Death', 'ReinforcementSpawn'].includes(
+      event.type,
+    )
+  )
+    continue;
+  const list = motionByTick.get(event.tick) ?? [];
+  list.push(event);
+  motionByTick.set(event.tick, list);
+}
 const hazards = scheduleHazards(demoConfig.seed, defaultGameData);
 
 function getName(id: string): string {
@@ -82,17 +94,22 @@ export function App() {
   useEffect(() => {
     if (!playing) return;
     let id = 0;
+    let active = true;
     let last = performance.now();
     const tick = (now: number) => {
+      if (!active) return;
       const elapsed = Math.min(0.1, (now - last) / 1000);
       last = now;
       setPlayhead((value) =>
         Math.min(demoResult.ticks, value + elapsed * 10 * speed),
       );
-      id = requestAnimationFrame(tick);
+      if (active) id = requestAnimationFrame(tick);
     };
     id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
+    return () => {
+      active = false;
+      cancelAnimationFrame(id);
+    };
   }, [playing, speed]);
   useEffect(() => {
     if (playhead >= demoResult.ticks) setPlaying(false);
@@ -116,6 +133,12 @@ export function App() {
         .reverse(),
     [whole],
   );
+  const motionEvents = useMemo(() => {
+    const result: MatchEvent[] = [];
+    for (let at = Math.max(0, whole - 5); at <= whole + 5; at++)
+      result.push(...(motionByTick.get(at) ?? []));
+    return result;
+  }, [whole]);
   const teamA = [
     ...demoConfig.lineupA.main.map((entry) => entry.unitId),
     demoConfig.lineupA.reinforcement,
@@ -151,7 +174,9 @@ export function App() {
               current={current}
               next={next}
               alpha={playhead - whole}
-              tick={whole}
+              tick={playhead}
+              events={motionEvents}
+              hazards={hazards}
             />
             {warningHazard && (
               <div className="hazard-overlay warning">

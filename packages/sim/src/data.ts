@@ -119,6 +119,16 @@ export const hazardSchema = z
     id: idSchema,
     element: elementSchema,
     name: z.string().min(1),
+    vfx: idSchema.optional(),
+    warnOverlay: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/)
+      .optional(),
+    activeOverlay: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/)
+      .optional(),
+    trail: z.enum(['slash', 'vine', 'ripple', 'scorch', 'crack']).optional(),
     effect: z.discriminatedUnion('type', [
       z
         .object({ type: z.literal('damage_max_hp_per_second'), pct: fraction })
@@ -147,11 +157,56 @@ export const hazardSchema = z
   })
   .strict();
 
+export const vfxSchema = z
+  .object({
+    id: idSchema,
+    element: elementSchema,
+    layers: z
+      .array(
+        z
+          .object({
+            type: z.literal('particles'),
+            count: z.number().int().min(1).max(300),
+            shape: z.enum(['diamond', 'leaf', 'drop', 'flame', 'shard']),
+            speed: z.tuple([positive, positive]),
+            life: positive,
+            color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+            blend: z.literal('add'),
+          })
+          .strict(),
+      )
+      .min(1),
+    telegraph: z
+      .object({
+        color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+        duration: positive,
+      })
+      .strict(),
+  })
+  .strict();
+
 export type Element = z.infer<typeof elementSchema>;
 export type Role = z.infer<typeof roleSchema>;
 export type UnitDef = z.infer<typeof unitSchema>;
 export type SkillDef = z.infer<typeof skillSchema>;
 export type HazardDef = z.infer<typeof hazardSchema>;
+export type VfxDef = z.infer<typeof vfxSchema>;
+
+export function loadVfxData(
+  input: unknown,
+  skills: SkillDef[],
+  hazards: HazardDef[],
+): VfxDef[] {
+  const vfx = uniqueIds(z.array(vfxSchema).parse(input), 'vfx');
+  const byId = new Map(vfx.map((item) => [item.id, item]));
+  for (const skill of skills)
+    if (skill.vfx && !byId.has(skill.vfx))
+      throw new Error(`Missing VFX for skill ${skill.id}`);
+  for (const hazard of hazards)
+    if (hazard.vfx && !byId.has(hazard.vfx))
+      throw new Error(`Missing VFX for hazard ${hazard.id}`);
+  return vfx;
+}
 
 function uniqueIds<T extends { id: string }>(items: T[], label: string): T[] {
   const ids = new Set<string>();

@@ -3,7 +3,8 @@ import { defaultGameData } from './default-data.js';
 import { hexGrid, type Position } from './grid.js';
 import { SeededRng } from './rng.js';
 
-export const RULE_VERSION = '0.3.0';
+export const RULE_VERSION = '0.3.1';
+export const MAX_ENERGY = 200;
 export type Side = 'A' | 'B';
 export type Winner = Side | 'draw';
 export interface Lineup {
@@ -399,7 +400,7 @@ function chooseTarget(
       : foe;
   if (
     role === 'support' &&
-    unit.energy >= 100 &&
+    unit.energy >= MAX_ENERGY &&
     skillOf(state, unit, 'active').effects.some(
       (effect) => effect.type === 'heal',
     )
@@ -631,7 +632,7 @@ function applyPending(
           (unit) => unit.id === action.source.id,
         )!;
         liveSource.energy = Math.min(
-          100,
+          MAX_ENERGY,
           liveSource.energy +
             12 * energyMultiplier(state, snapshot, action.source),
         );
@@ -699,7 +700,7 @@ function applyPending(
           (actualDamage * source.amount) / totalIncoming;
       if (total > 0)
         unit.energy = Math.min(
-          100,
+          MAX_ENERGY,
           unit.energy + 6 * energyMultiplier(state, snapshot, before),
         );
     }
@@ -895,7 +896,7 @@ export function step(state: MatchState): void {
     if (state.tick < unit.nextAttackTick) continue;
     const active = skillOf(state, unit, 'active');
     const canCast =
-      unit.energy >= 100 &&
+      unit.energy >= MAX_ENERGY &&
       !(
         active.effects.some((effect) => effect.type === 'heal') &&
         !allies(snapshot, unit).some((ally) => hpPct(state, ally) < 1)

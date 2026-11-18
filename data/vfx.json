@@ -1,1 +1,162 @@
-[]
+[
+  {
+    "id": "jin_gu_bang_impact",
+    "element": "metal",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 24,
+        "shape": "diamond",
+        "speed": [120, 260],
+        "life": 0.25,
+        "color": "#aab2c0",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#aab2c0", "duration": 0.4 }
+  },
+  {
+    "id": "ren_shen_guo_impact",
+    "element": "wood",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 22,
+        "shape": "leaf",
+        "speed": [60, 150],
+        "life": 0.35,
+        "color": "#3f9d5b",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#3f9d5b", "duration": 0.4 }
+  },
+  {
+    "id": "liu_sha_he_impact",
+    "element": "water",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 30,
+        "shape": "drop",
+        "speed": [80, 180],
+        "life": 0.35,
+        "color": "#3b7fd8",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#3b7fd8", "duration": 0.4 }
+  },
+  {
+    "id": "hoa_tiem_thuong_impact",
+    "element": "fire",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 28,
+        "shape": "flame",
+        "speed": [110, 240],
+        "life": 0.28,
+        "color": "#e4572e",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#e4572e", "duration": 0.4 }
+  },
+  {
+    "id": "zhen_di_impact",
+    "element": "earth",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 32,
+        "shape": "shard",
+        "speed": [80, 190],
+        "life": 0.4,
+        "color": "#b98a48",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#b98a48", "duration": 0.4 }
+  },
+  {
+    "id": "sword_rain_field",
+    "element": "metal",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 90,
+        "shape": "diamond",
+        "speed": [160, 260],
+        "life": 0.6,
+        "color": "#aab2c0",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#aab2c0", "duration": 10 }
+  },
+  {
+    "id": "vines_field",
+    "element": "wood",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 70,
+        "shape": "leaf",
+        "speed": [40, 100],
+        "life": 0.9,
+        "color": "#3f9d5b",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#3f9d5b", "duration": 10 }
+  },
+  {
+    "id": "flood_field",
+    "element": "water",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 80,
+        "shape": "drop",
+        "speed": [80, 170],
+        "life": 0.8,
+        "color": "#3b7fd8",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#3b7fd8", "duration": 10 }
+  },
+  {
+    "id": "wildfire_field",
+    "element": "fire",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 90,
+        "shape": "flame",
+        "speed": [70, 180],
+        "life": 0.8,
+        "color": "#e4572e",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#e4572e", "duration": 10 }
+  },
+  {
+    "id": "sandstorm_field",
+    "element": "earth",
+    "layers": [
+      {
+        "type": "particles",
+        "count": 100,
+        "shape": "shard",
+        "speed": [90, 170],
+        "life": 0.8,
+        "color": "#b98a48",
+        "blend": "add"
+      }
+    ],
+    "telegraph": { "color": "#b98a48", "duration": 10 }
+  }
+]
