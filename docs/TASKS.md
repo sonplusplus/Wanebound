@@ -4,11 +4,11 @@ Quy tắc: làm đúng một mục mỗi lần, theo thứ tự. Đọc tiêu ch
 
 ## Việc của người dùng (không giao agent)
 - Ảnh nguồn đã nhận ngày 18/11/2026: `zhenyuan`, `sha_wujing`, `bull_demon`, `ne_zha`, `sun_wukong` nằm trong `assets/characters/<id>/concept.png`. Vẫn cần xử lý nền và xuất WebP để dùng trong trận.
-- [ ] Dọn nền 5 ảnh còn sót (vòng tròn, mây), xuất sprite theo `art_style.md` §5, đặt vào `assets/processed/`.
+- [ ] Dọn nền 5 ảnh còn sót (vòng tròn, mây), xuất sprite theo `art_style.md` §5 vào `packages/client/public/units/<id>/`.
 - [ ] Vẽ chân dung gacha 3:4 và icon cho 5 quái.
 - [ ] Vẽ texture hiệu ứng 5 hành (nền đen) và 2 nền map thử.
 - [ ] Ghi sổ `prompts.md` cho từng asset (model, seed, license).
-- [ ] Trả lời các câu trong `QUESTIONS.md` (Q1-Q3 trước M1).
+- [x] Trả lời các câu trong `QUESTIONS.md` (Q1-Q3 trước M1).
 
 ## M0 — Khởi tạo repo
 - [x] pnpm workspace: `packages/sim`, `packages/client`, `packages/server` (rỗng ban đầu), `data/`, `tools/`.
@@ -47,13 +47,16 @@ Ghi chú M1: Đã dựng sim xác định theo tick, 5 quái/10 skill/5 hazard, 
 Bot thử 300 trận có 98,7% hết giờ và thời lượng trung bình 179,6 giây; cần phân tích/cân bằng ở M5. Dùng zod theo kiến trúc và thêm tsx nhỏ để chạy CLI TypeScript, không đưa Node API vào sim.
 
 ## M2 — Hiển thị bàn đấu (packages/client)
-- [ ] Vite + React + PixiJS, bàn 7×5 co theo chiều rộng, giữ tỉ lệ 7:5.
-- [ ] Vẽ quân bằng hình khối màu theo hành, thanh máu, thanh năng lượng, khiên.
-- [ ] Hiển thị cảnh báo hazard (đếm ngược, overlay) và hazard đang chạy.
-- [ ] Điều khiển phát: tốc độ 1×, 2×, 4×, tạm dừng, phát lại từ event log.
-- [ ] Nội suy vị trí giữa hai tick.
+- [x] Vite + React + PixiJS, bàn 7×5 co theo chiều rộng, giữ tỉ lệ 7:5.
+- [x] Vẽ quân bằng hình khối màu theo hành, thanh máu, thanh năng lượng, khiên.
+- [x] Hiển thị cảnh báo hazard (đếm ngược, overlay) và hazard đang chạy.
+- [x] Điều khiển phát: tốc độ 1×, 2×, 4×, tạm dừng, phát lại từ event log.
+- [x] Nội suy vị trí giữa hai tick.
 
 **Nghiệm thu:** chạy một trận từ config cố định, xem mượt trên điện thoại (màn hẹp) và máy tính; phát lại cùng log cho cùng hình.
+
+Ghi chú M2: Trang xem trận seed 42 đọc `Snapshot` từ event log, nội suy quân giữa tick, có thanh trạng thái, hazard và điều khiển phát lại; đã kiểm tra ở panel hẹp và viewport desktop 1280 px.
+`pnpm test` (13 test), `pnpm typecheck` và Vite build chạy qua. React, PixiJS, Vite theo stack đã chốt; chưa tích hợp sprite và VFX (M3).
 
 ## M3 — Tích hợp art và VFX
 - [ ] `tools/export_assets.py`: cắt theo thân, scale theo chiều cao thân, xuất WebP nền trong suốt.
