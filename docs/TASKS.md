@@ -101,6 +101,7 @@ Ghi chú M4: Luồng cục bộ dùng hash route chọn đội → đặt quân 
 
 Ghi chú M5: Chặn cứng 0,8 ô, tìm đường vòng, phân lớp sprite theo chân; test kiểm tra khoảng cách mọi quân sống suốt trận và vị trí viện trợ. Q28 đã duyệt trễ đổi mục tiêu 3 tick; rule v0.4.5, golden replay cập nhật.
 Bot 300 trận: thắng từng quái 46,4–56,5%, trung bình 176,7 giây, 91,7% hết giờ. Đã đề xuất thử tăng ATK chuẩn 25% trong `balance_report.md`, chưa áp dụng; nghiệm thu thời lượng 60–150 giây chưa đạt.
+Sửa lỗi đứng yên ở khe hẹp: lưới tìm đường tăng từ nửa ô lên một phần tư ô, A* giữ va chạm cứng; test tái hiện vị trí Ngộ Không và Na Tra. Replay đổi sang rule v0.4.6; số liệu cân bằng ở báo cáo trên cần đo lại sau thay đổi đường đi.
 
 **Nghiệm thu:** không quân nào có tỉ lệ thắng ngoài khoảng 40-60% khi tính theo từng quái trong bot ngẫu nhiên, hoặc có ghi chú giải thích; trận trung bình kéo dài 60-150 giây.
 

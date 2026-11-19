@@ -37,6 +37,26 @@ const config: MatchConfig = {
 };
 
 describe('match', () => {
+  it('moves Wukong and Ne Zha through the narrow opening in the deployed lineup', () => {
+    const state = createMatch({
+      ...config,
+      lineupA: {
+        ...config.lineupA,
+        main: [
+          { unitId: 'sun_wukong', position: { x: 1, y: 3 } },
+          { unitId: 'zhenyuan', position: { x: 0, y: 2 } },
+          { unitId: 'sha_wujing', position: { x: 2, y: 1 } },
+        ],
+      },
+    });
+    for (let i = 0; i < 100; i++) step(state);
+    expect(
+      state.units.find((unit) => unit.id === 'A0_sun_wukong')!.position.x,
+    ).toBeGreaterThan(2);
+    expect(
+      state.units.find((unit) => unit.id === 'B1_ne_zha')!.position.x,
+    ).toBeLessThan(4.5);
+  });
   it('delays switching to a nearer target by three ticks and switches immediately after death', () => {
     const data = {
       ...defaultGameData,
