@@ -27,3 +27,11 @@ Thời lượng trung bình **176,7 giây**; **91,7%** trận hết giờ; **1,0
 - Bot dùng vị trí cố định, không đại diện cho chiến thuật đặt quân của người chơi.
 - Chưa kiểm tra trên điện thoại tầm trung thật; hiệu năng art M3 vẫn chưa nghiệm thu.
 - File CSV của lượt chạy nằm ở `reports/m5-bot-300.csv`.
+
+## Kiểm tra lại sau sửa đường đi và Q29
+
+Bot cùng seed và 300 trận: rule v0.4.7 (tìm đường 1/8 ô, chỉ số cũ) có thời lượng trung bình 176,2 giây, 90,7% hết giờ; tỉ lệ thắng Ngộ Không 47,5%, Na Tra 46,2%. Khi tính riêng lượt làm quân chính, Ngộ Không gây trung bình 6.481 sát thương theo Damage events và sống đến cuối 25,9%; Na Tra 6.024 và 28,8%. Damage events ghi lượng sát thương phát ra, có thể lớn hơn lượng HP thực sự bị mất.
+
+Theo Q29, rule v0.4.8 tăng Ngộ Không từ HP 3.000/ATK 78/DEF 20 lên **HP 3.400/ATK 82/DEF 24**. Chạy lại cùng seed: Ngộ Không thắng 48,1%, Na Tra 46,6%; lượt Ngộ Không làm quân chính gây trung bình 7.600 sát thương và sống đến cuối 30,5%. Na Tra tương ứng 5.849 và 26,6%. Các quái khác vẫn có tỉ lệ thắng trong khoảng 40–60%.
+
+Thời lượng trung bình vẫn **175,9 giây**, **89,0%** hết giờ, nên tiêu chí 60–150 giây của M5 còn chưa đạt. CSV mới: `reports/m5-bot-300-v048.csv` (file báo cáo sinh cục bộ, không commit). Việc tăng đồng thời ba chỉ số được người dùng duyệt cho Ngộ Không, nên mức đóng góp riêng của từng chỉ số không thể tách từ lần chạy này.

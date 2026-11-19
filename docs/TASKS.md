@@ -102,6 +102,8 @@ Ghi chú M4: Luồng cục bộ dùng hash route chọn đội → đặt quân 
 Ghi chú M5: Chặn cứng 0,8 ô, tìm đường vòng, phân lớp sprite theo chân; test kiểm tra khoảng cách mọi quân sống suốt trận và vị trí viện trợ. Q28 đã duyệt trễ đổi mục tiêu 3 tick; rule v0.4.5, golden replay cập nhật.
 Bot 300 trận: thắng từng quái 46,4–56,5%, trung bình 176,7 giây, 91,7% hết giờ. Đã đề xuất thử tăng ATK chuẩn 25% trong `balance_report.md`, chưa áp dụng; nghiệm thu thời lượng 60–150 giây chưa đạt.
 Sửa lỗi đứng yên ở khe hẹp: lưới tìm đường tăng từ nửa ô lên một phần tư ô, A* giữ va chạm cứng; test tái hiện vị trí Ngộ Không và Na Tra. Replay đổi sang rule v0.4.6; số liệu cân bằng ở báo cáo trên cần đo lại sau thay đổi đường đi.
+Sửa tiếp Na Tra đặt sau đồng đội: lưới tìm đường tăng lên một phần tám ô; quét các vị trí đặt quân phía sau không còn trường hợp đứng ngoài tầm quá 50 tick ở khoảng cách trên 1,5 ô. Test xác nhận Na Tra vòng qua đồng đội rồi tấn công; replay rule v0.4.7.
+Q29 đã duyệt: Ngộ Không HP 3.400/ATK 82/DEF 24 ở rule v0.4.8. Bot 300 trận cùng seed: thắng Ngộ Không 48,1%, Na Tra 46,6%; trận trung bình 175,9 giây, vẫn chưa đạt tiêu chí thời lượng M5. Chi tiết trong `balance_report.md`.
 
 **Nghiệm thu:** không quân nào có tỉ lệ thắng ngoài khoảng 40-60% khi tính theo từng quái trong bot ngẫu nhiên, hoặc có ghi chú giải thích; trận trung bình kéo dài 60-150 giây.
 

@@ -98,3 +98,5 @@ Hai map MVP đã chốt ở Q18. Map hiệu ứng theo vùng được hoãn sau 
 **Q27 — đã duyệt 19/11/2026:** Cho tìm đường vòng khi quân chưa đủ tầm và bị đồng đội/địch chặn. Giữ khoảng cách 0,8 ô, không xuyên quân; chỉ đứng chờ khi không có đường. Triển khai tìm đường xác định trên lưới nửa ô, kiểm tra cả đoạn di chuyển.
 
 **Q28 — đã duyệt 19/11/2026:** Giữ mục tiêu hiện tại thêm 0,3 giây (3 tick) khi có mục tiêu gần hơn; đổi ngay nếu mục tiêu cũ chết hoặc bị khiêu khích buộc đổi. Đã cập nhật rule v0.4.5.
+
+**Q29 — đã duyệt 19/11/2026:** Người dùng nhận thấy Tôn Ngộ Không yếu hơn Na Tra về sát thương và độ cứng. Trong bot 300 trận rule v0.4.7, khi là quân chính, Ngộ Không có trung bình 6.481 sát thương ghi trong Damage events và sống đến cuối 25,9%; Na Tra tương ứng 6.024 và 28,8%. Chỉ số gốc Ngộ Không HP 3.000/DEF 20/ATK 78, Na Tra HP 3.200/DEF 22/ATK 74. Người dùng chốt tăng Ngộ Không lên HP 3.400/DEF 24/ATK 82; đã cập nhật roster, units.json và rule v0.4.8.

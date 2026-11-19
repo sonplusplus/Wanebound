@@ -1,7 +1,7 @@
 import { hexGrid, type Position } from './grid.js';
 import { movementBlocked } from './collision.js';
 
-const subdivisions = 4;
+const subdivisions = 8;
 const columns = 6 * subdivisions + 1;
 const rows = 4 * subdivisions + 1;
 const nodeCount = columns * rows;
@@ -59,7 +59,7 @@ function point(index: number): Position {
   };
 }
 
-/** A* over quarter-hex axial points; sweep every segment to preserve hard collision. */
+/** A* over eighth-hex axial points; sweep every segment to preserve hard collision. */
 export function navigate(
   from: Position,
   target: Position,

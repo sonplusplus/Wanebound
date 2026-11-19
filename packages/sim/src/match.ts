@@ -5,7 +5,7 @@ import { SeededRng } from './rng.js';
 import { combat } from './collision.js';
 import { navigate } from './navigation.js';
 
-export const RULE_VERSION = '0.4.6';
+export const RULE_VERSION = '0.4.8';
 export const MAX_ENERGY = 200;
 export type Side = 'A' | 'B';
 export type Winner = Side | 'draw';

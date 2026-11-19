@@ -5,7 +5,7 @@ Chỉ số là chỉ số PvP chuẩn, giá trị khởi điểm lấy từ bả
 ## 1. Vertical slice (5 quái Tây Du)
 | id | Tên | Hành | Nghề | Độ hiếm | HP | ATK | DEF | SPD | RANGE | ASPD |
 |---|---|---|---|---|---|---|---|---|---|---|
-| `sun_wukong` | Tôn Ngộ Không | Kim | chiến binh | SSR | 3000 | 78 | 20 | 2.4 | 1 | 1.1 |
+| `sun_wukong` | Tôn Ngộ Không | Kim | chiến binh | SSR | 3400 | 82 | 24 | 2.4 | 1 | 1.1 |
 | `zhenyuan` | Trấn Nguyên Đại Tiên | Mộc | hỗ trợ | SR | 3400 | 40 | 25 | 1.6 | 3 | 0.8 |
 | `sha_wujing` | Sa Tăng | Thủy | tank | SR | 5400 | 45 | 55 | 1.4 | 1 | 0.9 |
 | `ne_zha` | Na Tra | Hỏa | chiến binh | SSR | 3200 | 74 | 22 | 2.2 | 1 | 1.1 |

@@ -37,6 +37,34 @@ const config: MatchConfig = {
 };
 
 describe('match', () => {
+  it('lets Ne Zha placed behind allies route to and attack the nearest enemy', () => {
+    const state = createMatch({
+      ...config,
+      lineupA: {
+        ...config.lineupA,
+        main: [
+          { unitId: 'ne_zha', position: { x: 0, y: 0 } },
+          { unitId: 'sha_wujing', position: { x: 1, y: 1 } },
+          { unitId: 'sun_wukong', position: { x: 2, y: 0 } },
+        ],
+        reinforcement: 'zhenyuan',
+      },
+    });
+    for (let i = 0; i < 300 && !state.winner; i++) step(state);
+    expect(
+      state.events.some(
+        (event) =>
+          event.type === 'Move' &&
+          event.sourceId === 'A0_ne_zha' &&
+          (event.position?.y ?? 0) > 0.5,
+      ),
+    ).toBe(true);
+    expect(
+      state.events.some(
+        (event) => event.type === 'Attack' && event.sourceId === 'A0_ne_zha',
+      ),
+    ).toBe(true);
+  });
   it('moves Wukong and Ne Zha through the narrow opening in the deployed lineup', () => {
     const state = createMatch({
       ...config,

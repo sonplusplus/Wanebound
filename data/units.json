@@ -6,9 +6,9 @@
     "role": "warrior",
     "rarity": "SSR",
     "stats": {
-      "hp": 3000,
-      "atk": 78,
-      "def": 20,
+      "hp": 3400,
+      "atk": 82,
+      "def": 24,
       "spd": 2.4,
       "range": 1,
       "aspd": 1.1

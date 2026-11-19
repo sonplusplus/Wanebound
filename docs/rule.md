@@ -1,4 +1,4 @@
-# Rule v0.4.6 — Luật game
+# Rule v0.4.8 — Luật game
 
 Nguồn sự thật duy nhất cho luật và số liệu. Giá trị ghi "khởi điểm" sẽ được chỉnh bằng bot mô phỏng (TASKS M5).
 
