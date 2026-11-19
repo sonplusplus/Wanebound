@@ -2,6 +2,36 @@
 
 File này ghi việc cụ thể còn thiếu. Chỉ đánh dấu `[x]` khi đã xem kết quả thực tế; `docs/TASKS.md` giữ trạng thái mốc chính.
 
+## M5G — Godot: trận mẫu, hoạt ảnh và VFX (đang làm)
+
+- [x] Replay seed 42 đã mang event `Attack`, `Cast`, `Damage`, `Death`, `ReinforcementSpawn` từ sim sang Godot; không tính lại kết quả trong GDScript. Đã thấy đòn đánh, số sát thương và chuyển động lao tới trên web desktop.
+- [x] Thay chữ logo tạm bằng asset Wanebound trong header Godot; thu nhỏ sprite, giữ vòng chân ở vị trí sim và sắp lớp theo chân. Đã xem trực tiếp: bớt đè hình, nhưng nhóm quân cận chiến vẫn khó tách ở vài tick.
+- [x] Có lớp cảnh báo/đang diễn ra và nét chuyển động riêng cho sáu hazard trong code; đã xem Bão cát của replay seed 42 ở 1×. Replay này chỉ chứa Bão cát và Dây leo.
+- [ ] Soát toàn bộ replay ở 1×: các quân đứng sát, đánh cùng tick, HP/energy và tên không che nhau. Phân biệt tâm quân đúng theo sim với phần ảnh/vũ khí trang trí chồng hình; dọn mây, trăng và viền trắng trong battle sprite trước khi tăng kích thước lại.
+- [ ] Hoàn thiện hoạt ảnh đứng, chạy, đánh, trúng đòn, chết và viện trợ xuất hiện. Bản hiện tại mới có nhún, lao ngắn, nháy sáng và mờ khi chết; cần xem rõ cái chết/viện trợ ở tick 589, lật sprite phe B và kiểm tra từng chuyển động ở 1×.
+
+### Năm active — cần telegraph, impact và aftermath riêng
+
+Hiện tại `Cast` đã tạo vòng màu theo hành; một số skill có đường đánh, chấm lá hoặc vòng phụ. Đây là dấu hiệu tạm để thấy event, chưa đủ phân biệt skill trong trận.
+
+- [ ] **Kim Cô Bổng / Ngộ Không:** viền báo trước quanh người, cung quét gậy sắc bạc/vàng tới đúng mục tiêu, chớp va chạm và số sát thương. Vòng/đường thẳng hiện tại còn giống đòn thường.
+- [ ] **Nhân Sâm Quả / Trấn Nguyên:** dấu quả và lá trước khi dùng, luồng xanh tới đồng minh được chọn, bùng hồi máu và dấu hồi rõ trên thanh HP. Hiện mới có vòng và chấm xanh.
+- [ ] **Lưu Sa Hà / Sa Tăng:** dòng nước cuộn quanh người, khiên nước bao thân và vùng khiêu khích đọc được bán kính; viền trạng thái còn trong thời gian hiệu lực. Hiện mới có hai vòng xanh.
+- [ ] **Hỏa Tiêm Thương / Na Tra:** đường thương lửa có hướng, va chạm cam đỏ và dấu chậm trên mục tiêu. Hiện mới có đường sáng và vòng chung.
+- [ ] **Chấn Địa / Ngưu Ma Vương:** telegraph vùng quanh bản thân, sóng nứt đất lan ra đúng vùng ảnh hưởng, bụi/đá va chạm và dấu chậm. Hiện mới có vòng lan.
+
+### Sáu hazard — cần nghiệm thu riêng ở 1×
+
+Mỗi loại cần cảnh báo đủ 10 giây, hiệu ứng hoạt động 6 giây, dấu vết sau khi hết và viền trên đúng quân chịu tác động theo dữ liệu sim. Nét phủ bàn hiện là hình 2D tạm, chưa có texture hoặc aftermath.
+
+- [ ] **Mưa kiếm:** vệt kiếm rơi chéo; tạo replay/cảnh thử có hazard này và kiểm tra quân Mộc chịu tác động.
+- [ ] **Dây leo:** dây mọc từ rìa bàn; tua tới hazard thứ hai của seed 42, rồi kiểm tra quân Thổ và dấu giảm SPD.
+- [ ] **Nước lũ:** lớp sóng dâng; tạo cảnh thử và kiểm tra quân Hỏa cùng dấu giảm tích năng lượng.
+- [ ] **Hỏa hoạn:** mảng lửa và khói; tạo cảnh thử, vết cháy còn lại và quân Kim chịu tác động.
+- [ ] **Bão cát:** vệt cát đã thấy ở seed 42; tăng độ rõ vùng phủ, kiểm tra quân Thủy và dấu giảm tầm, thêm dấu vết sau hiệu ứng.
+- [ ] **Sân băng:** sương và mảnh băng; tạo cảnh thử và kiểm tra viền lạnh trên cả hai đội cùng dấu giảm ASPD.
+- [ ] Tạo texture VFX 5 hành khi hình 2D chưa đủ rõ; đo FPS/bộ nhớ trên desktop rồi trên điện thoại thật theo giới hạn hạt của `docs/skill_animation.md`.
+
 ## M3 — Logo, nhân vật, bản đồ, skill và VFX
 
 - [x] Lưu logo người dùng cung cấp ở `assets/others/wanebound-logo-source.png`, xuất WebP vào client và hiển thị trong trang xem trận.
