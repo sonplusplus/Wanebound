@@ -1,6 +1,6 @@
 # Ngũ Hành Chiến — hướng dẫn cho coding agent
 
-Game web tactical thời gian thực: người chơi chọn đội (3 quái chính + 1 viện trợ) và đặt quân, sau đó quái tự đánh trên bàn 7x5. Hệ ngũ hành (sinh/khắc) kết hợp nghề (tank, chiến binh, xạ thủ, pháp sư, hỗ trợ). Bối cảnh Tây Du, sau mở rộng sang Hồng Hoang. Free-to-play, không bán sức mạnh.
+Game web tactical thời gian thực: người chơi chọn đội (3 quái chính + 1 viện trợ) và đặt quân, sau đó quái tự đánh trên bàn 7x5. Hệ ngũ hành (sinh/khắc) kết hợp nghề (tank, chiến binh, tầm xa, sát thủ, pháp sư, hỗ trợ). Bối cảnh Tây Du, sau mở rộng sang Hồng Hoang. Free-to-play, không bán sức mạnh.
 
 ## Đọc theo thứ tự
 1. `docs/glossary.md` (thuật ngữ và tên định danh trong code)

@@ -37,6 +37,9 @@ Màu hiển thị: Kim `#aab2c0`, Mộc `#3f9d5b`, Thủy `#3b7fd8`, Hỏa `#e45
 | Thủy | nước lũ | sóng dâng từ một cạnh, gợn nước |
 | Hỏa | hỏa hoạn | lửa bùng từng mảng, khói bốc lên |
 | Thổ | bão cát | bụi cát quét ngang, tầm nhìn mờ nhẹ |
+| Trung tính | sân băng | mặt sân phủ sương giá, mảnh băng nhỏ và viền lạnh quanh cả hai đội |
+
+Lôi Kiếp là ứng viên tiếp theo (Q21): cần chốt luật trước khi làm VFX; telegraph nên cho thấy vị trí/đối tượng bị sét đánh.
 
 ## 5. Hoạt ảnh nhân vật (tween trên sprite tĩnh)
 - Đứng yên: nhún nhẹ lên xuống.
@@ -44,7 +47,7 @@ Màu hiển thị: Kim `#aab2c0`, Mộc `#3f9d5b`, Thủy `#3b7fd8`, Hỏa `#e45
 - Tấn công: lao tới một đoạn ngắn rồi lùi.
 - Trúng đòn: nháy trắng ngắn.
 - Chết: mờ dần và hạ xuống.
-- Xuất hiện (viện trợ): rơi xuống kèm glow, khoảng 0,3 giây, và viền bất tử trong 1,5 giây.
+- Xuất hiện (viện trợ): rơi xuống kèm glow, khoảng 0,3 giây, và viền bất tử trong 2 giây.
 
 ## 6. Schema `data/vfx.json`
 ```json

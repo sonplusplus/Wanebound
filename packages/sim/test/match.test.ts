@@ -11,6 +11,8 @@ import {
   type MatchConfig,
 } from '../src/match.js';
 import { defaultGameData } from '../src/default-data.js';
+import { hexGrid } from '../src/grid.js';
+import { combat, movementBlocked } from '../src/collision.js';
 
 const config: MatchConfig = {
   seed: 12345,
@@ -35,6 +37,96 @@ const config: MatchConfig = {
 };
 
 describe('match', () => {
+  it('delays switching to a nearer target by three ticks and switches immediately after death', () => {
+    const data = {
+      ...defaultGameData,
+      units: defaultGameData.units.map((unit) => ({
+        ...unit,
+        stats: { ...unit.stats, spd: 0 },
+      })),
+    };
+    const state = createMatch({ ...config, data });
+    state.hazards = [];
+    const source = state.units.find((unit) => unit.id === 'A0_sun_wukong')!;
+    const old = state.units.find((unit) => unit.id === 'B0_bull_demon')!;
+    const nearer = state.units.find((unit) => unit.id === 'B1_ne_zha')!;
+    old.position = { x: 4, y: 0 };
+    nearer.position = { x: 3, y: 0 };
+    source.targetId = old.id;
+    for (let tick = 1; tick <= 3; tick++) {
+      step(state);
+      expect(source.targetId).toBe(old.id);
+    }
+    step(state);
+    expect(source.targetId).toBe(nearer.id);
+    nearer.alive = false;
+    step(state);
+    expect(source.targetId).toBe(old.id);
+  });
+  it('ranged approaches distant enemies and attacks the nearest rather than lowest HP', () => {
+    const data = {
+      ...defaultGameData,
+      units: defaultGameData.units.map((unit) =>
+        unit.id === 'sun_wukong'
+          ? {
+              ...unit,
+              role: 'ranged' as const,
+              stats: { ...unit.stats, range: 3 },
+            }
+          : unit,
+      ),
+    };
+    const state = createMatch({ ...config, data });
+    const source = state.units.find((unit) => unit.id === 'A0_sun_wukong')!;
+    const nearest = state.units.find((unit) => unit.id === 'B0_bull_demon')!;
+    const weak = state.units.find((unit) => unit.id === 'B1_ne_zha')!;
+    weak.hp = 1;
+    step(state);
+    expect(
+      state.events.find(
+        (event) => event.type === 'Attack' && event.sourceId === source.id,
+      )?.targetId,
+    ).toBe(nearest.id);
+    source.position = { x: 0, y: 0 };
+    const before = { ...source.position };
+    step(state);
+    expect(source.position).not.toEqual(before);
+  });
+
+  it('blocks crossing an occupied hex even when the destination is beyond it', () => {
+    expect(
+      movementBlocked({ x: 0, y: 0 }, { x: 3, y: 0 }, { x: 1.5, y: 0 }),
+    ).toBe(true);
+    expect(
+      movementBlocked({ x: 0, y: 0 }, { x: 3, y: 0 }, { x: 1.5, y: 1 }),
+    ).toBe(false);
+  });
+
+  it('keeps every living unit separated throughout a match', () => {
+    const result = runToEnd(config);
+    for (const event of result.events) {
+      const units = event.units?.filter((unit) => unit.alive) ?? [];
+      for (let i = 0; i < units.length; i++)
+        for (let j = i + 1; j < units.length; j++)
+          expect(
+            hexGrid.distance(units[i]!.position, units[j]!.position),
+          ).toBeGreaterThanOrEqual(combat.minimumUnitDistance - 0.000001);
+    }
+  });
+
+  it('spawns reinforcement immediately near the fallen unit', () => {
+    const state = createMatch(config);
+    state.units[0]!.alive = false;
+    state.units[0]!.position = { x: 2, y: 0 };
+    const ally = state.units.find((unit) => unit.side === 'A' && unit.alive)!;
+    ally.position = { x: 0, y: 0 };
+    ally.nextAttackTick = 9999;
+    step(state);
+    const reinforcement = state.units.find(
+      (unit) => unit.side === 'A' && unit.reinforcement,
+    )!;
+    expect(reinforcement.position).toEqual({ x: 2, y: 0 });
+  });
   it('replays exactly, including tick hashes', () => {
     const first = runToEnd(config);
     const second = runToEnd(config);
@@ -52,7 +144,7 @@ describe('match', () => {
     expect(damageAmount(100, 0, 1, 0.85)).toBe(85);
   });
 
-  it('spawns reinforcement once at the outer column with 15 tick immunity', () => {
+  it('spawns reinforcement once at the fallen position with 20 tick immunity', () => {
     const state = createMatch(config);
     const fallen = state.units.find((unit) => unit.id === 'A0_sun_wukong')!;
     fallen.hp = 1;
@@ -63,8 +155,8 @@ describe('match', () => {
       (unit) => unit.reinforcement && unit.side === 'A',
     )!;
     expect(spawned).toBeDefined();
-    expect(spawned.position).toEqual({ x: 0, y: 0 });
-    expect(spawned.invulnerableUntil).toBe(state.tick + 15);
+    expect(spawned.position).toEqual({ x: 2, y: 0 });
+    expect(spawned.invulnerableUntil).toBe(state.tick + 20);
     for (let i = 0; i < 30; i++) step(state);
     expect(
       state.events.filter(
@@ -74,7 +166,7 @@ describe('match', () => {
     ).toHaveLength(1);
   });
 
-  it('prevents damage for all 15 ticks after reinforcement spawn', () => {
+  it('prevents damage for all 20 ticks after reinforcement spawn', () => {
     const state = createMatch(config);
     const fallen = state.units.find((unit) => unit.id === 'A0_sun_wukong')!;
     fallen.hp = 1;
@@ -88,7 +180,7 @@ describe('match', () => {
       if (unit.side === 'A' && unit.id !== spawned.id) unit.alive = false;
     attacker.position = { x: 1, y: 0 };
     const hp = spawned.hp;
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 20; i++) {
       attacker.nextAttackTick = 0;
       step(state);
       expect(spawned.hp).toBe(hp);

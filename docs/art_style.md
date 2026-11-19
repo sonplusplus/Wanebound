@@ -53,7 +53,7 @@ Thiết lập đã dùng được: khổ 3:4 hoặc 2:3, CFG khoảng 5,5, 25-28
 Quy tắc xuất sprite: scale theo **chiều cao thân** để các quái cùng cỡ, vũ khí dài được phép vượt khung; neo ở chân; quân phe B lật ngang trong code.
 
 ## 6. Quy trình tạo quái mới
-1. Chọn dòng nhân vật (tên, nghề, vũ khí, màu hành); nghề quyết định vũ khí và dáng (tank khiên/giáp nặng, chiến binh kiếm/gậy, xạ thủ cung, pháp sư trượng/quạt, hỗ trợ gậy/bầu).
+1. Chọn dòng nhân vật (tên, nghề, vũ khí, màu hành); nghề quyết định vũ khí và dáng (tank khiên/giáp nặng, chiến binh kiếm/gậy, tầm xa cung/ám khí/trượng/quạt, sát thủ vũ khí gọn, hỗ trợ gậy/bầu).
 2. Ghép style lock + prompt âm, cùng model, CFG và khổ ảnh với ảnh neo.
 3. Tạo 2-4 ảnh, chọn ảnh gần ảnh neo nhất. Nếu có Fixed Seed hoặc ảnh tham chiếu, dùng để kéo về cùng gu.
 4. Ghi vào `prompts.md`: model, phiên bản, seed, CFG, khổ, prompt đầy đủ, license, ngày.

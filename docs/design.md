@@ -1,4 +1,4 @@
-# Design v0.2 — Ngũ Hành Chiến (Tây Du / Hồng Hoang)
+# Design v0.2 — Wanebound (Tây Du / Hồng Hoang)
 
 ## 1. Tổng quan
 Game web tactical thời gian thực trên bàn cờ hex lục giác. Người chơi chọn đội (3 quái chính + 1 viện trợ) và đặt quân; trận bắt đầu thì quái tự đánh. Lõi chiến thuật là ngũ hành (sinh/khắc) kết hợp nghề, vị trí đặt quân và hazard báo trước. Có sưu tầm quái bằng gacha, đi ải PvE có cốt truyện và PvP xếp hạng. Free-to-play, không bán sức mạnh. Nền web, responsive (máy tính và trình duyệt điện thoại).
@@ -8,7 +8,7 @@ Cảm hứng cấu trúc: *Tactical Monsters Rumble Arena* (trận ngắn, vị 
 ## 2. Trụ cột
 1. **Vị trí quyết định.** SPD là tốc độ di chuyển trên bàn, nên chỗ đặt quân quyết định ai chạm ai trước.
 2. **Ngũ hành là lớp counter chính.** Mỗi quái một hành, khắc và sinh ảnh hưởng sát thương và nhịp năng lượng.
-3. **Nghề cho vai trò rõ.** Tank, chiến binh, xạ thủ, pháp sư, hỗ trợ; hình dáng và vũ khí giúp nhận ra nghề, màu giúp nhận ra hành.
+3. **Nghề cho vai trò rõ.** Tank, chiến binh, tầm xa (gộp xạ thủ/pháp sư), sát thủ, hỗ trợ; hình dáng và vũ khí giúp nhận ra nghề, màu giúp nhận ra hành. Cơ chế sát thủ cần chốt trước khi thêm quân.
 4. **Thông tin công khai, bất ngờ nằm ở vị trí.** Hazard (loại và thời điểm) hiện từ bước đặt quân; ẩn vị trí của đối thủ đến khi tiết lộ.
 5. **Công bằng.** PvP chuẩn hóa chỉ số; tiền thật không mua được sức mạnh.
 

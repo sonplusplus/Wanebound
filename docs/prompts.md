@@ -1,5 +1,10 @@
 # prompts.md — sổ prompt và license
 
+## Logo Wanebound Tân Nguyệt — bản thử do người dùng cung cấp 18/11/2026
+- Nguồn: ảnh đính kèm trong chat, lưu `assets/others/wanebound-logo-source.png`; xuất WebP cho client.
+- Model, seed, prompt, license thương mại: chưa được cung cấp; cần bổ sung trước cổng G1.
+- Q23 được chốt ngày 19/11/2026: tên hiển thị là `Wanebound`.
+
 Mỗi asset một mục. Ghi đủ để vẽ lại được và để chứng minh nguồn gốc.
 
 Mẫu:
@@ -49,3 +54,11 @@ masterpiece, best quality, newest, absurdres, highres, 1boy, male focus, solo, a
 ```
 1girl, girl, female, breasts, loli, child, chibi, lowres, worst quality, low quality, bad anatomy, bad hands, extra fingers, text, watermark, signature, logo, 3d, realistic, photorealistic, painterly, blurry, multiple characters, frame, border, dark background, black background, vignette
 ```
+
+## Hai map thử — 19/11/2026
+- Công cụ: imagegen tích hợp, thay fal theo yêu cầu người dùng; model/version/seed cụ thể không được tool trả về.
+- Asset: packages/client/public/maps/flaming_mountain.png; packages/client/public/maps/water_curtain_cave.png. Ảnh thử, chưa qua G1.
+- Prompt chung: landscape 7:5, original Chinese guofeng anime cel shaded arena, elevated near top-down camera, no horizon, broad continuous empty stone floor covers 85% of canvas; rich perimeter only at outer edges; no characters, UI, text, logos, grid or hex tiles.
+- Hỏa Diệm Sơn: muted warm basalt floor, volcanic stone pillars, lava channels, embers, ancient carved steps, orange gold perimeter lighting.
+- Thủy Liêm Động: muted blue gray jade floor, waterfall curtain at upper cave edge, turquoise streams, fern, carved steps, rocky grotto and dappled sunlight.
+- Đã xem cả hai ảnh trong trận với lưới code phủ lên; chưa nghiệm thu trên điện thoại.

@@ -1,7 +1,23 @@
-import { RULE_VERSION, runToEnd, type MatchConfig } from '@ngu-hanh/sim';
+import {
+  RULE_VERSION,
+  runToEnd,
+  selectMap,
+  defaultGameData,
+  type MatchConfig,
+} from '@ngu-hanh/sim';
+
+const requestedMap = new URLSearchParams(window.location.search).get('map');
+let previewSeed = 42;
+if (
+  requestedMap === 'flaming_mountain' ||
+  requestedMap === 'water_curtain_cave'
+) {
+  while (selectMap(previewSeed, defaultGameData) !== requestedMap)
+    previewSeed++;
+}
 
 export const demoConfig: MatchConfig = {
-  seed: 42,
+  seed: previewSeed,
   version: RULE_VERSION,
   mode: 'pvp',
   lineupA: {

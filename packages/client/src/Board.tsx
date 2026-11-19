@@ -16,6 +16,7 @@ import {
   type UnitState,
 } from '@ngu-hanh/sim';
 import { renderVfx } from './Vfx';
+import { renderHazardArt } from './HazardArt';
 
 const colors: Record<Element, number> = {
   metal: 0xaab2c0,
@@ -29,37 +30,8 @@ function point(x: number, y: number): { x: number; y: number } {
   return { x: 64 + x * 74 + y * 37, y: 120 + y * 64.5 };
 }
 
-function drawGrid(graphics: Graphics, mapId: string | null): void {
+function drawGrid(graphics: Graphics): void {
   graphics.clear();
-  // A single terrain surface sits beneath the tactical hex overlay.
-  const fiery = mapId === 'flaming_mountain';
-  graphics.rect(0, 0, 700, 500).fill(fiery ? 0x60443a : 0x3c5350);
-  graphics
-    .rect(0, 0, 700, 72)
-    .fill({ color: fiery ? 0x492b30 : 0x244852, alpha: 0.55 });
-  graphics
-    .rect(0, 428, 700, 72)
-    .fill({ color: fiery ? 0x492b30 : 0x244852, alpha: 0.55 });
-  if (fiery) {
-    graphics
-      .moveTo(0, 430)
-      .bezierCurveTo(170, 360, 240, 490, 390, 420)
-      .bezierCurveTo(530, 345, 605, 440, 700, 380)
-      .stroke({ color: 0xdc763f, alpha: 0.43, width: 18 });
-  } else {
-    graphics
-      .moveTo(0, 75)
-      .bezierCurveTo(160, 15, 260, 155, 410, 80)
-      .bezierCurveTo(550, 12, 620, 98, 700, 48)
-      .stroke({ color: 0x70b6ba, alpha: 0.47, width: 26 });
-  }
-  for (let i = 0; i < 38; i++) {
-    const x = (i * 173 + 41) % 700;
-    const y = (i * 97 + 23) % 500;
-    graphics
-      .circle(x, y, 2 + (i % 3))
-      .fill({ color: fiery ? 0xefab62 : 0x9be2d8, alpha: 0.17 });
-  }
   for (let y = 0; y < 5; y++) {
     for (let x = 0; x < 7; x++) {
       const center = point(x, y);
@@ -79,14 +51,15 @@ function drawGrid(graphics: Graphics, mapId: string | null): void {
           center.x - 37,
           center.y - 21.5,
         ])
-        .fill({ color: fill, alpha: 0.075 })
-        .stroke({ color: 0xdde6d2, alpha: 0.38, width: 1 });
+        .fill({ color: fill, alpha: 0.025 })
+        .stroke({ color: 0xdde6d2, alpha: 0.16, width: 1 });
     }
   }
 }
 
 function drawUnits(
   graphics: Graphics,
+  ground: Graphics,
   current: UnitState[],
   next: UnitState[],
   alpha: number,
@@ -94,6 +67,7 @@ function drawUnits(
   spritesReady: boolean,
 ): void {
   graphics.clear();
+  ground.clear();
   const nextById = new Map(next.map((unit) => [unit.id, unit]));
   for (const unit of current) {
     if (!unit.alive) continue;
@@ -107,11 +81,20 @@ function drawUnits(
     const center = point(x, y);
     const def = defaultGameData.units.find((item) => item.id === unit.unitId)!;
     const color = colors[def.element];
-    const teamColor = unit.side === 'A' ? 0x8bd3e8 : 0xffa0a0;
+    const teamColor = unit.side === 'A' ? 0x67d7ba : 0xf27770;
     if (spritesReady) {
-      graphics
-        .circle(center.x, center.y + 17, 22)
-        .stroke({ color: teamColor, alpha: 0.7, width: 2 });
+      ground
+        .ellipse(center.x + 5, center.y + 25, 22, 8)
+        .fill({ color: 0x10191b, alpha: 0.16 });
+      ground
+        .ellipse(center.x + 2, center.y + 25, 15, 5)
+        .fill({ color: 0x10191b, alpha: 0.28 });
+      ground
+        .ellipse(center.x, center.y + 25, 8, 3)
+        .fill({ color: 0x10191b, alpha: 0.34 });
+      ground
+        .ellipse(center.x, center.y + 25, 18, 7)
+        .stroke({ color: teamColor, alpha: 0.4, width: 1.5 });
     } else {
       graphics
         .circle(center.x, center.y + 3, 28)
@@ -125,11 +108,11 @@ function drawUnits(
         .fill({ color: 0xffffff, alpha: 0.3 });
     }
     const barX = center.x - 27;
-    const barY = center.y - 41;
+    const barY = center.y - 60;
     graphics.roundRect(barX, barY, 54, 6, 3).fill(0x0a1018);
     graphics
       .roundRect(barX, barY, Math.max(0, (54 * unit.hp) / def.stats.hp), 6, 3)
-      .fill(0x78d77a);
+      .fill(teamColor);
     graphics.roundRect(barX, barY + 8, 54, 4, 2).fill(0x0a1018);
     graphics
       .roundRect(
@@ -174,7 +157,10 @@ export function Board({
 }: BoardProps) {
   const host = useRef<HTMLDivElement>(null);
   const layer = useRef<Graphics | null>(null);
+  const groundLayer = useRef<Graphics | null>(null);
   const vfxLayer = useRef<Graphics | null>(null);
+  const hazardFloor = useRef<Graphics | null>(null);
+  const hazardFront = useRef<Graphics | null>(null);
   const spriteLayerRef = useRef<Container | null>(null);
   const textures = useRef(new Map<string, Texture>());
   const sprites = useRef(new Map<string, Sprite>());
@@ -183,19 +169,28 @@ export function Board({
 
   const render = () => {
     const frame = latest.current;
+    if (hazardFloor.current && hazardFront.current)
+      renderHazardArt(
+        hazardFloor.current,
+        hazardFront.current,
+        frame.tick,
+        frame.hazards,
+        frame.current,
+      );
     for (const unit of frame.current) {
       if (sprites.current.has(unit.id)) continue;
       const texture = textures.current.get(unit.unitId);
       if (!texture || !spriteLayerRef.current) continue;
       const sprite = new Sprite(texture);
       sprite.anchor.set(0.5, 1);
-      sprite.scale.set(unit.side === 'B' ? -0.18 : 0.18, 0.18);
+      sprite.scale.set(unit.side === 'B' ? -0.16 : 0.16, 0.16);
       spriteLayerRef.current.addChild(sprite);
       sprites.current.set(unit.id, sprite);
     }
-    if (layer.current)
+    if (layer.current && groundLayer.current)
       drawUnits(
         layer.current,
+        groundLayer.current,
         frame.current,
         frame.next,
         frame.alpha,
@@ -219,6 +214,7 @@ export function Board({
         ((following?.position.y ?? unit.position.y) - unit.position.y) *
           frame.alpha;
       const center = point(x, y);
+      sprite.zIndex = center.y;
       const attack = frame.events.find(
         (event) =>
           (event.type === 'Attack' || event.type === 'Cast') &&
@@ -248,7 +244,7 @@ export function Board({
           following.position.y !== unit.position.y);
       sprite.position.set(
         center.x + lungeX,
-        center.y + 26 + lungeY - Math.sin(frame.tick * 0.35 + id.length) * 1.5,
+        center.y + 26 + lungeY - Math.sin(frame.tick * 0.35 + id.length) * 0.35,
       );
       sprite.rotation = moving ? (unit.side === 'A' ? 0.04 : -0.04) : 0;
       sprite.alpha = frame.events.some(
@@ -262,9 +258,13 @@ export function Board({
         : 1;
       if (following && !following.alive) sprite.alpha *= 1 - frame.alpha;
       if (unit.reinforcement) {
-        const age = frame.tick - (unit.invulnerableUntil - 15);
+        const spawn = frame.events.find(
+          (event) =>
+            event.type === 'ReinforcementSpawn' && event.sourceId === id,
+        );
+        const age = spawn ? frame.tick - spawn.tick : 3;
         if (age >= 0 && age < 3) {
-          sprite.y -= 18 * (1 - age / 3);
+          sprite.y -= 100 * (1 - age / 3) ** 2;
           sprite.alpha *= age / 3;
         }
       }
@@ -276,7 +276,7 @@ export function Board({
         frame.tick,
         frame.current,
         frame.events.filter((event) => event.type === 'Cast'),
-        frame.hazards,
+        frame.hazards.filter((hazard) => frame.tick >= hazard.endTick),
         (host.current?.clientWidth ?? 700) < 600 ? 150 : 300,
       );
   };
@@ -285,19 +285,55 @@ export function Board({
     const app = new Application();
     let disposed = false;
     void app
-      .init({ width: 700, height: 500, antialias: true, backgroundAlpha: 0 })
+      .init({
+        width: 700,
+        height: 500,
+        resolution: Math.min(window.devicePixelRatio || 1, 2),
+        autoDensity: true,
+        antialias: true,
+        backgroundAlpha: 0,
+      })
       .then(() => {
         if (disposed) {
           app.destroy(true, { children: true });
           return;
         }
         host.current?.appendChild(app.canvas);
+        app.canvas.style.width = '100%';
+        app.canvas.style.height = '100%';
         const grid = new Graphics();
         const spriteLayer = new Container();
+        spriteLayer.sortableChildren = true;
         const units = new Graphics();
+        const ground = new Graphics();
+        groundLayer.current = ground;
         const effects = new Graphics();
-        app.stage.addChild(grid, spriteLayer, units, effects);
-        drawGrid(grid, mapId);
+        const groundWeather = new Graphics();
+        const overheadWeather = new Graphics();
+        app.stage.addChild(
+          grid,
+          groundWeather,
+          ground,
+          spriteLayer,
+          units,
+          effects,
+          overheadWeather,
+        );
+        hazardFloor.current = groundWeather;
+        hazardFront.current = overheadWeather;
+        drawGrid(grid);
+        const terrain = new Sprite();
+        terrain.width = 700;
+        terrain.height = 500;
+        app.stage.addChildAt(terrain, 0);
+        void Assets.load<Texture>(
+          `/maps/${mapId ?? 'water_curtain_cave'}.png`,
+        ).then((texture) => {
+          if (disposed) return;
+          terrain.texture = texture;
+          terrain.width = 700;
+          terrain.height = 500;
+        });
         layer.current = units;
         vfxLayer.current = effects;
         spriteLayerRef.current = spriteLayer;
@@ -310,15 +346,22 @@ export function Board({
         ).then((loaded) => {
           if (disposed) return;
           for (const asset of loaded)
-            if (asset.status === 'fulfilled')
+            if (asset.status === 'fulfilled') {
+              asset.value.texture.source.autoGenerateMipmaps = true;
+              asset.value.texture.source.scaleMode = 'linear';
+              asset.value.texture.source.updateMipmaps();
               textures.current.set(asset.value.id, asset.value.texture);
+            }
           render();
         });
       });
     return () => {
       disposed = true;
       layer.current = null;
+      groundLayer.current = null;
       vfxLayer.current = null;
+      hazardFloor.current = null;
+      hazardFront.current = null;
       spriteLayerRef.current = null;
       textures.current.clear();
       sprites.current.clear();

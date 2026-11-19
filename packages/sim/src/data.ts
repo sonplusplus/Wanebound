@@ -10,8 +10,8 @@ export const elementSchema = z.enum([
 export const roleSchema = z.enum([
   'tank',
   'warrior',
-  'archer',
-  'mage',
+  'ranged',
+  'assassin',
   'support',
 ]);
 const idSchema = z.string().regex(/^[a-z][a-z0-9_]*$/);

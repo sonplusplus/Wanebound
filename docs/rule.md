@@ -1,4 +1,4 @@
-# Rule v0.4.0 — Luật game
+# Rule v0.4.5 — Luật game
 
 Nguồn sự thật duy nhất cho luật và số liệu. Giá trị ghi "khởi điểm" sẽ được chỉnh bằng bot mô phỏng (TASKS M5).
 
@@ -9,6 +9,8 @@ Thay đổi v0.3: bàn hex axial, tương sinh tăng ASPD, hazard 1–3 lần, h
 Thay đổi v0.3.1: ngưỡng năng lượng dùng active tăng từ 100 lên 200 theo Q16.
 
 Thay đổi v0.4.0: thêm Sân băng và hai map PvP có hiệu ứng chung theo Q17–Q18.
+
+Thay đổi v0.4.1: đổi tên nghề Xạ thủ thành Tầm xa (`ranged`), thêm định danh Sát thủ (`assassin`). Sát thủ chưa có quái trong roster; luật ẩn thân/nhảy vọt cần chốt ở Q22 trước khi triển khai.
 
 ## 1. Trận đấu
 - Thời gian thực, mô phỏng cố định 10 tick/giây (1 tick = 0,1 giây), tối đa 180 giây (1800 tick).
@@ -29,14 +31,15 @@ Sát thương = `max(1, ATK × skillMult × 100 / (100 + DEF) × elementMult)`.
 |---|---|---|---|---|
 | Tank | `tank` | 1 | địch gần nhất | HP, DEF cao; ATK thấp |
 | Chiến binh | `warrior` | 1 | địch gần nhất | cân bằng, ATK cao |
-| Xạ thủ | `archer` | 4 | địch có % máu thấp nhất trong tầm | ATK cao; HP, DEF thấp |
-| Pháp sư | `mage` | 3 | địch gần nhất, skill thiên về diện rộng | ATK cao; DEF thấp |
-| Hỗ trợ | `support` | 3 | đồng minh có % máu thấp nhất; nếu không ai bị thương thì địch gần nhất | HP vừa; ATK thấp |
+| Tầm xa | `ranged` | 3 | địch gần nhất | ATK cao; HP, DEF thấp |
+| Sát thủ | `assassin` | 1 | địch gần nhất; active tùy nhân vật | HP thấp, số liệu theo roster |
+| Hỗ trợ | `support` | 3 | đánh thường chọn địch gần nhất; active chọn đối tượng theo skill (hồi máu hiện tại chọn đồng minh có % HP thấp nhất) | HP vừa; ATK thấp |
 
 Quy tắc mỗi tick:
 1. Mọi quyết định đọc từ trạng thái đầu tick. Sát thương, hồi máu và hiệu ứng áp dụng cuối tick. Xử lý chết sau cùng (hai bên có thể cùng chết trong một tick).
 2. Chọn mục tiêu theo nghề. Hòa thì chọn đơn vị có id nhỏ hơn (so sánh chuỗi).
-3. Mục tiêu ngoài tầm: di chuyển thẳng về phía mục tiêu với tốc độ SPD, không vượt quá khoảng cách còn lại. Chưa có va chạm giữa các quân ở v0.2 (xem TASKS M5).
+   Khi có địch gần hơn, giữ mục tiêu hiện tại thêm 3 tick rồi mới đổi nếu địch đó vẫn gần hơn. Đổi ngay nếu mục tiêu cũ chết hoặc bị khiêu khích buộc đổi (Q28, 19/11/2026).
+3. Mục tiêu ngoài tầm: di chuyển thẳng về phía mục tiêu với tốc độ SPD, không vượt quá khoảng cách còn lại. Theo Q24 (19/11/2026): khoảng cách tối thiểu giữa tâm các quân là 0,8 ô hex, chặn cứng khi đường đi xâm phạm khoảng cách này. Xét di chuyển theo id ổn định; quân đánh nếu mục tiêu trong tầm; khi ngoài tầm và bị chặn thì tìm đường vòng qua vị trí trống (Q27), chỉ chờ khi không tìm được đường.
 4. Trong tầm và hết hồi đòn: tấn công, hoặc dùng skill active nếu đủ năng lượng. Hồi đòn = 1 / ASPD giây.
 5. Quân bị khiêu khích (taunt) buộc chọn kẻ khiêu khích làm mục tiêu nếu kẻ đó còn trong bán kính taunt.
 6. Khoảng cách là số bước hex ngắn nhất giữa hai tọa độ axial, không dùng `Math.hypot` (xem architecture.md). 
@@ -51,15 +54,15 @@ Quy tắc mỗi tick:
   - Mỗi chiều tính tối đa một lần. (khởi điểm, xem QUESTIONS Q2)
 
 ## 5. Năng lượng và skill
-- Mỗi quái có 1 passive (luôn bật, kích hoạt theo điều kiện trong dữ liệu) và 1 active.
+- Mỗi quái có 1 passive (luôn bật, kích hoạt theo điều kiện trong dữ liệu) và 1 active. Nghề không giới hạn loại skill: tank có thể hồi máu hoặc khiêu khích; chiến binh có thể tăng tốc đánh; hỗ trợ có thể buff hoặc debuff. Đây là hướng thiết kế, chưa phải bộ skill hay số liệu mới cho roster. Tầm xa gộp xạ thủ và pháp sư, không bắt buộc skill diện rộng.
 - Năng lượng: +12 khi gây đòn thường trúng, +6 khi bị đòn trúng (không tính hazard). Đạt 200: lần hành động tấn công kế tiếp thay bằng active, năng lượng về 0.
 - Active hồi máu chỉ dùng khi có đồng minh bị thương; nếu không thì đánh thường và giữ năng lượng.
 - Hiệu ứng skill mô tả bằng dữ liệu (architecture.md §4), không viết cứng.
 
 ## 6. Viện trợ
 - Xuất hiện đúng một lần, khi quân chính đầu tiên của phe đó chết. Nếu nhiều quân chết cùng tick vẫn chỉ một viện trợ.
-- Vị trí: cột ngoài cùng phía mình (cột 0 với phe A, cột 6 với phe B), hàng gần nhất với quân vừa chết.
-- Bất tử 1,5 giây sau khi xuất hiện, kể cả với hazard.
+- Vị trí (Q25, 19/11/2026): xuất hiện ngay ở vị trí trống gần quân chết nhất. Ưu tiên chính vị trí chết nếu đủ khoảng cách 0,8 ô với mọi quân sống; nếu bị chiếm chọn tâm ô trống gần nhất trên bàn, hòa theo hàng rồi cột tăng dần. Giáng thế không gây sát thương hay hiệu ứng chiến đấu.
+- Bất tử 2 giây (20 tick) sau khi xuất hiện, chống mọi sát thương kể cả hazard; không cộng thêm khiên. Hoạt ảnh đáp không trì hoãn xuất hiện trong sim.
 - Chọn sau khi đã thấy 3 quái chính của đối thủ (xem mục 9).
 
 ## 7. Hazard (chỉ PvP)
@@ -132,3 +135,11 @@ Chưa có tiền tệ cao cấp. Nếu thêm sau này, chỉ bán skin và hiệ
 ## 15. Ghép trận và xếp hạng
 - Xếp hạng ẩn dùng Glicko-2 cho PvP xếp hạng. Ghép trận realtime theo rating, bất đồng bộ chọn bản chụp trong khoảng rating gần.
 - Thoát giữa trận realtime bị xử thua; mô phỏng vẫn chạy tới hết trận trên server.
+
+## 16. Bộ thử nghiệm sát thủ đầu tiên — duyệt 19/11/2026
+- Bộ skill riêng cho sát thủ đầu tiên, không bắt buộc mọi sát thủ. Chưa có nhân vật và chỉ số cơ bản trong roster.
+- Đánh thường cận chiến 1 ô, đuổi địch gần nhất.
+- Active đủ 200 năng lượng: đột kích địch có % HP thấp nhất trong 3 ô hex; hòa theo id. Đáp vào vị trí trống kề mục tiêu ưu tiên phía lưng (phía cột nhà đối thủ), tôn trọng va chạm. Gây 180% ATK qua công thức sát thương hiện hành.
+- Không có mục tiêu/chỗ đáp: đánh thường nếu có thể và giữ năng lượng. Không tàng hình hoặc miễn sát thương.
+- Passive: +15% sát thương lên mục tiêu dưới 50% HP.
+- Trước khi triển khai cần nhân vật/chỉ số cụ thể và xử lý đột kích đồng tick, tương tác khiêu khích.

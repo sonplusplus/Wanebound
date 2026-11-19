@@ -1,356 +1,371 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  RULE_VERSION,
   defaultGameData,
+  runToEnd,
   scheduleHazards,
-  type MatchEvent,
+  selectMap,
+  type MatchConfig,
+  type MatchResult,
+  type Position,
 } from '@ngu-hanh/sim';
-import { Board } from './Board';
-import { demoConfig, demoResult, frames } from './demo';
+import { Battle } from './Battle';
 import { vi } from './i18n/vi';
 
-const hazardNames: Record<string, string> = {
-  sword_rain: vi.sword_rain,
-  vines: vi.vines,
-  flood: vi.flood,
-  wildfire: vi.wildfire,
-  sandstorm: vi.sandstorm,
-  ice_field: vi.ice_field,
+type Screen = 'team' | 'deployment' | 'battle' | 'result';
+const botMain = [
+  { unitId: 'bull_demon', position: { x: 4, y: 0 } },
+  { unitId: 'ne_zha', position: { x: 5, y: 1 } },
+  { unitId: 'zhenyuan', position: { x: 6, y: 2 } },
+];
+const seed = 42;
+const name = (id: string) => vi[id as keyof typeof vi] ?? id;
+const def = (id: string) =>
+  defaultGameData.units.find((unit) => unit.id === id)!;
+const screenFromHash = (): Screen => {
+  const hash = location.hash.slice(1);
+  return hash === 'deployment' || hash === 'battle' || hash === 'result'
+    ? hash
+    : 'team';
 };
-const eventNames: Record<string, string> = {
-  Attack: 'Tấn công',
-  Cast: 'Thi triển',
-  Death: 'Gục ngã',
-  ReinforcementSpawn: 'Viện trợ xuất hiện',
-  HazardWarn: 'Cảnh báo thiên tai',
-  HazardStart: 'Thiên tai bắt đầu',
-  HazardEnd: 'Thiên tai kết thúc',
-};
-const visibleEvents = demoResult.events.filter(
-  (event) => event.type in eventNames,
-);
-const motionByTick = new Map<number, MatchEvent[]>();
-for (const event of demoResult.events) {
-  if (
-    !['Attack', 'Cast', 'Damage', 'Death', 'ReinforcementSpawn'].includes(
-      event.type,
-    )
-  )
-    continue;
-  const list = motionByTick.get(event.tick) ?? [];
-  list.push(event);
-  motionByTick.set(event.tick, list);
-}
-const hazards = scheduleHazards(demoConfig.seed, defaultGameData);
-
-function getName(id: string): string {
-  const unit = defaultGameData.units.find((item) => id.endsWith(item.id));
-  return unit ? vi[unit.id as keyof typeof vi] : id;
-}
-
-function eventDescription(event: MatchEvent): string {
-  if (event.hazardId)
-    return `${eventNames[event.type]} · ${hazardNames[event.hazardId]}`;
-  if (event.type === 'ReinforcementSpawn')
-    return `${eventNames[event.type]} · ${getName(event.sourceId ?? '')}`;
-  if (event.type === 'Death') return `${getName(event.targetId ?? '')} gục ngã`;
-  if (event.type === 'Cast')
-    return `${getName(event.sourceId ?? '')} dùng tuyệt kỹ`;
-  return `${getName(event.sourceId ?? '')} tấn công`;
-}
-
-function Team({ side, ids }: { side: 'A' | 'B'; ids: string[] }) {
-  return (
-    <section className={`team team-${side.toLowerCase()}`}>
-      <div className="team-heading">
-        <span className="team-dot" />
-        {side === 'A' ? vi.teamA : vi.teamB}
-      </div>
-      <div className="team-list">
-        {ids.map((id, index) => {
-          const unit = defaultGameData.units.find((item) => item.id === id)!;
-          return (
-            <div className="team-unit" key={id}>
-              <span className={`element-token ${unit.element}`}>
-                {vi[unit.element]}
-              </span>
-              <span className="team-unit-copy">
-                <strong>{vi[unit.id as keyof typeof vi]}</strong>
-                <small>
-                  {vi[unit.role]}
-                  {index === 3 ? ' · Viện trợ' : ''}
-                </small>
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
 
 export function App() {
-  const [playhead, setPlayhead] = useState(0);
-  const [playing, setPlaying] = useState(true);
-  const [speed, setSpeed] = useState(1);
+  const [screen, setScreen] = useState<Screen>('team');
+  const [main, setMain] = useState<string[]>([]);
+  const [reinforcement, setReinforcement] = useState('');
+  const [positions, setPositions] = useState<Record<string, Position>>({});
+  const [selected, setSelected] = useState('');
+  const [seconds, setSeconds] = useState(30);
+  const [config, setConfig] = useState<MatchConfig>();
+  const [result, setResult] = useState<MatchResult>();
+  const mapId = selectMap(seed, defaultGameData);
+  const hazards = scheduleHazards(seed, defaultGameData);
+  const go = (next: Screen) => {
+    location.hash = next;
+    setScreen(next);
+  };
   useEffect(() => {
-    if (!playing) return;
-    let id = 0;
-    let active = true;
-    let last = performance.now();
-    const tick = (now: number) => {
-      if (!active) return;
-      const elapsed = Math.min(0.1, (now - last) / 1000);
-      last = now;
-      setPlayhead((value) =>
-        Math.min(demoResult.ticks, value + elapsed * 10 * speed),
-      );
-      if (active) id = requestAnimationFrame(tick);
-    };
-    id = requestAnimationFrame(tick);
-    return () => {
-      active = false;
-      cancelAnimationFrame(id);
-    };
-  }, [playing, speed]);
+    const sync = () => setScreen(screenFromHash());
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
   useEffect(() => {
-    if (playhead >= demoResult.ticks) setPlaying(false);
-  }, [playhead]);
+    if (
+      (screen === 'deployment' && main.length !== 3) ||
+      ((screen === 'battle' || screen === 'result') && !result)
+    )
+      go('team');
+  }, [screen, main.length, result]);
+  const lock = () => {
+    if (main.length !== 3 || !reinforcement) return;
+    const used = new Set(Object.values(positions).map((p) => `${p.x},${p.y}`));
+    const free: Position[] = [];
+    for (let y = 0; y < 5; y++)
+      for (let x = 0; x < 3; x++)
+        if (!used.has(`${x},${y}`)) free.push({ x, y });
+    let cursor = 0;
+    const next: MatchConfig = {
+      seed,
+      version: RULE_VERSION,
+      mode: 'pvp',
+      lineupA: {
+        main: main.map((unitId) => ({
+          unitId,
+          position: positions[unitId] ?? free[cursor++]!,
+        })),
+        reinforcement,
+      },
+      lineupB: { main: botMain, reinforcement: 'sha_wujing' },
+    };
+    setConfig(next);
+    setResult(runToEnd(next));
+    go('battle');
+  };
+  useEffect(() => {
+    if (screen !== 'deployment') return;
+    if (seconds === 0) {
+      lock();
+      return;
+    }
+    const timer = window.setTimeout(
+      () => setSeconds((value) => value - 1),
+      1000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [screen, seconds]);
+  const place = (id: string, pos: Position) => {
+    if (!main.includes(id) || pos.x > 2) return;
+    setPositions((before) => {
+      const next = { ...before };
+      for (const [other, p] of Object.entries(next))
+        if (other !== id && p.x === pos.x && p.y === pos.y) delete next[other];
+      next[id] = pos;
+      return next;
+    });
+    setSelected(id);
+  };
+  const reset = () => {
+    setMain([]);
+    setReinforcement('');
+    setPositions({});
+    setSelected('');
+    setSeconds(30);
+    setConfig(undefined);
+    setResult(undefined);
+    go('team');
+  };
 
-  const whole = Math.floor(playhead);
-  const current = frames[Math.min(whole, frames.length - 1)]?.units ?? [];
-  const next = frames[Math.min(whole + 1, frames.length - 1)]?.units ?? current;
-  const activeHazard = hazards.find(
-    (hazard) => playhead >= hazard.startTick && playhead < hazard.endTick,
-  );
-  const warningHazard = hazards.find(
-    (hazard) => playhead >= hazard.warnTick && playhead < hazard.startTick,
-  );
-  const upcoming = hazards.find((hazard) => playhead < hazard.warnTick);
-  const recent = useMemo(
-    () =>
-      visibleEvents
-        .filter((event) => event.tick <= whole)
-        .slice(-4)
-        .reverse(),
-    [whole],
-  );
-  const motionEvents = useMemo(() => {
-    const result: MatchEvent[] = [];
-    for (let at = Math.max(0, whole - 5); at <= whole + 5; at++)
-      result.push(...(motionByTick.get(at) ?? []));
-    return result;
-  }, [whole]);
-  const teamA = [
-    ...demoConfig.lineupA.main.map((entry) => entry.unitId),
-    demoConfig.lineupA.reinforcement,
-  ];
-  const teamB = [
-    ...demoConfig.lineupB.main.map((entry) => entry.unitId),
-    demoConfig.lineupB.reinforcement,
-  ];
-
-  return (
-    <div className="app-shell">
-      <header className="app-header">
-        <div className="brand-mark">五</div>
-        <div>
-          <h1>{vi.title}</h1>
-          <p>{vi.subtitle}</p>
-        </div>
-        <div className="header-pill">HEX · 7 × 5</div>
-      </header>
-      <main className="layout">
-        <div className="main-column">
-          <div className="section-head">
+  if (screen === 'battle' && config && result)
+    return (
+      <Battle
+        config={config}
+        result={result}
+        onExit={() => go('result')}
+        onComplete={() => go('result')}
+      />
+    );
+  if (screen === 'result' && result) {
+    const score = (side: 'A' | 'B') =>
+      Math.round(
+        result.score[side].damageDealt + result.score[side].healDone * 0.5,
+      ).toLocaleString('vi-VN');
+    return (
+      <div className="flow-shell">
+        <header className="flow-header">
+          <img src="/branding/wanebound-logo.webp" alt="" />
+          {vi.title}
+        </header>
+        <main className="result-screen">
+          <span className="eyebrow">{vi.result}</span>
+          <h1>
+            {result.winner === 'draw'
+              ? vi.draw
+              : result.winner === 'A'
+                ? vi.victory
+                : vi.defeat}
+          </h1>
+          <p>
+            {result.reason === 'timeout' ? vi.timeout : vi.elimination} ·{' '}
+            {(result.ticks / 10).toFixed(1)} {vi.seconds}
+          </p>
+          <div className="result-scores">
             <div>
-              <span className="eyebrow">TRẬN THỬ · SEED 42</span>
-              <h2>{vi.battlefield}</h2>
-              <span className="eyebrow">
-                {demoResult.mapId === 'flaming_mountain'
-                  ? vi.flaming_mountain
-                  : vi.water_curtain_cave}
-              </span>
+              {vi.teamA}
+              <strong>{score('A')}</strong>
             </div>
-            <div className="clock">
-              {(playhead / 10).toFixed(1)} <span>/ 180.0 s</span>
+            <div>
+              {vi.teamB}
+              <strong>{score('B')}</strong>
             </div>
           </div>
-          <div className="board-wrap">
-            <Board
-              current={current}
-              next={next}
-              alpha={playhead - whole}
-              tick={playhead}
-              events={motionEvents}
-              hazards={hazards}
-              mapId={demoResult.mapId}
-            />
-            {warningHazard && (
-              <div className="hazard-overlay warning">
-                <span>
-                  ⚠ {vi.hazard}: {hazardNames[warningHazard.id]}
-                </span>
-                <strong>
-                  {Math.ceil((warningHazard.startTick - playhead) / 10)}s
-                </strong>
-              </div>
-            )}
-            {activeHazard && (
-              <div className="hazard-overlay active">
-                <span>
-                  {vi.hazard}: {hazardNames[activeHazard.id]}
-                </span>
-                <strong>
-                  {Math.ceil((activeHazard.endTick - playhead) / 10)}s
-                </strong>
-              </div>
-            )}
-            <div className="board-legend">
-              <span>
-                <i className="legend-a" /> {vi.teamA}
-              </span>
-              <span>
-                <i className="legend-b" /> {vi.teamB}
-              </span>
-            </div>
+          <div className="flow-actions">
+            <button onClick={() => go('battle')}>{vi.replay}</button>
+            <button className="primary-button" onClick={reset}>
+              {vi.newMatch}
+            </button>
           </div>
-          <section className="playback-panel">
-            <div className="timeline-title">
-              <strong>{vi.timeline}</strong>
-              <span>TICK {whole.toString().padStart(4, '0')}</span>
+        </main>
+      </div>
+    );
+  }
+  return (
+    <div className="flow-shell">
+      <header className="flow-header">
+        <img src="/branding/wanebound-logo.webp" alt="" />
+        {vi.title}
+        <small>{vi.localMatch}</small>
+      </header>
+      <main className="flow-main">
+        <div className="flow-steps">
+          <span className={screen === 'team' ? 'active' : ''}>
+            01 {vi.chooseTeam}
+          </span>
+          <span className={screen === 'deployment' ? 'active' : ''}>
+            02 {vi.deploy}
+          </span>
+          <span>03 {vi.battlefield}</span>
+        </div>
+        {screen === 'team' ? (
+          <>
+            <div className="flow-title">
+              <span className="eyebrow">{vi.localMatch}</span>
+              <h1>{vi.chooseTeam}</h1>
+              <p>{vi.chooseTeamHelp}</p>
             </div>
-            <div className="timeline-wrap">
-              <input
-                aria-label="Chọn thời điểm trận đấu"
-                type="range"
-                min="0"
-                max={demoResult.ticks}
-                step="0.1"
-                value={playhead}
-                onChange={(event) => {
-                  setPlayhead(Number(event.target.value));
-                  setPlaying(false);
-                }}
-              />
-              <div className="timeline-markers">
-                {hazards.map((hazard, index) => (
-                  <span
-                    key={index}
-                    style={{
-                      left: `${(hazard.startTick / demoResult.ticks) * 100}%`,
-                    }}
-                    title={`${hazardNames[hazard.id]} · ${hazard.startTick / 10}s`}
-                  />
-                ))}
-              </div>
+            <div className="unit-grid">
+              {defaultGameData.units.map((unit) => {
+                const index = main.indexOf(unit.id);
+                const support = reinforcement === unit.id;
+                return (
+                  <div
+                    className={`unit-card ${index >= 0 || support ? 'chosen' : ''}`}
+                    key={unit.id}
+                  >
+                    <img src={`/${unit.art.portrait}`} alt="" />
+                    <div className="unit-card-body">
+                      <strong>{name(unit.id)}</strong>
+                      <span>
+                        {vi[unit.element]} · {vi[unit.role]}
+                      </span>
+                      <small>{unit.rarity}</small>
+                    </div>
+                    <div className="unit-card-actions">
+                      <button
+                        aria-pressed={index >= 0}
+                        disabled={support || (index < 0 && main.length === 3)}
+                        onClick={() =>
+                          setMain((before) =>
+                            index >= 0
+                              ? before.filter((id) => id !== unit.id)
+                              : [...before, unit.id],
+                          )
+                        }
+                      >
+                        {index >= 0
+                          ? `${vi.mainUnit} ${index + 1} ✓`
+                          : vi.mainUnit}
+                      </button>
+                      <button
+                        aria-pressed={support}
+                        disabled={index >= 0}
+                        onClick={() => setReinforcement(support ? '' : unit.id)}
+                      >
+                        {support ? `${vi.reinforcement} ✓` : vi.reinforcement}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <div className="controls">
+            <div className="flow-bottom">
+              <p>
+                {main.length}/3 {vi.mainUnits} ·{' '}
+                {reinforcement ? name(reinforcement) : vi.noReinforcement}
+              </p>
               <button
                 className="primary-button"
+                disabled={main.length !== 3 || !reinforcement}
                 onClick={() => {
-                  if (playhead >= demoResult.ticks) setPlayhead(0);
-                  setPlaying((value) => !value);
+                  setPositions({});
+                  setSelected('');
+                  setSeconds(30);
+                  go('deployment');
                 }}
               >
-                {playing ? 'Ⅱ  ' + vi.paused : '▶  ' + vi.play}
+                {vi.continue} →
               </button>
-              <button
-                onClick={() => {
-                  setPlayhead(0);
-                  setPlaying(true);
-                }}
-              >
-                ↺ {vi.replay}
-              </button>
-              <div className="speed-buttons">
-                <span>{vi.speed}</span>
-                {[1, 2, 4].map((value) => (
-                  <button
-                    className={speed === value ? 'selected' : ''}
-                    key={value}
-                    onClick={() => setSpeed(value)}
-                  >
-                    {value}×
-                  </button>
-                ))}
-              </div>
             </div>
-          </section>
-          <section className="event-panel">
-            <div className="panel-heading">
-              NHỊP TRẬN <span>Đọc trực tiếp từ event log</span>
+          </>
+        ) : (
+          <>
+            <div className="flow-title">
+              <span className="eyebrow">
+                {name(mapId)} · SEED {seed}
+              </span>
+              <h1>{vi.deploy}</h1>
+              <p>{vi.deployHelp}</p>
             </div>
-            <div className="event-list">
-              {recent.length ? (
-                recent.map((event, index) => (
-                  <div key={`${event.tick}-${event.type}-${index}`}>
-                    <time>{(event.tick / 10).toFixed(1)}s</time>
-                    <span>{eventDescription(event)}</span>
+            <div className="deployment-layout">
+              <section className="deployment-panel">
+                <div className="deployment-top">
+                  <strong>{vi.ownHalf}</strong>
+                  <time>{seconds}s</time>
+                </div>
+                <div
+                  className="deployment-board"
+                  style={{ backgroundImage: `url(/maps/${mapId}.png)` }}
+                >
+                  {Array.from({ length: 5 }, (_, y) =>
+                    Array.from({ length: 7 }, (_, x) => {
+                      const id = Object.keys(positions).find(
+                        (unitId) =>
+                          positions[unitId]?.x === x &&
+                          positions[unitId]?.y === y,
+                      );
+                      return (
+                        <button
+                          key={`${x},${y}`}
+                          className={`deployment-cell ${x < 3 ? 'valid' : ''} ${id ? 'occupied' : ''}`}
+                          style={{
+                            left: `${9 + x * 10.55 + y * 5.25}%`,
+                            top: `${20 + y * 13}%`,
+                          }}
+                          disabled={x > 2}
+                          onClick={() => selected && place(selected, { x, y })}
+                          onDragOver={(event) => event.preventDefault()}
+                          onDrop={(event) => {
+                            event.preventDefault();
+                            place(event.dataTransfer.getData('text/plain'), {
+                              x,
+                              y,
+                            });
+                          }}
+                          aria-label={`${vi.column} ${x + 1}, ${vi.row} ${y + 1}${id ? `: ${name(id)}` : ''}`}
+                        >
+                          {id ? (
+                            <img src={`/${def(id).art.icon}`} alt="" />
+                          ) : x < 3 ? (
+                            '·'
+                          ) : (
+                            ''
+                          )}
+                        </button>
+                      );
+                    }),
+                  )}
+                </div>
+                <p>{vi.deployHint}</p>
+              </section>
+              <aside className="deployment-side">
+                <section className="info-card">
+                  <span className="eyebrow">{vi.weatherForecast}</span>
+                  <h2>{name(mapId)}</h2>
+                  {hazards.map((hazard, index) => (
+                    <p key={index}>
+                      {(hazard.startTick / 10).toFixed(0)}s · {name(hazard.id)}
+                    </p>
+                  ))}
+                </section>
+                <section className="info-card">
+                  <span className="eyebrow">{vi.mainUnits}</span>
+                  <div className="deploy-roster">
+                    {main.map((id) => (
+                      <button
+                        key={id}
+                        draggable
+                        onDragStart={(event) =>
+                          event.dataTransfer.setData('text/plain', id)
+                        }
+                        className={selected === id ? 'selected' : ''}
+                        onClick={() => setSelected(id)}
+                      >
+                        <img src={`/${def(id).art.icon}`} alt="" />
+                        <span>
+                          {name(id)}
+                          <small>
+                            {positions[id]
+                              ? `${vi.column} ${positions[id].x + 1} · ${vi.row} ${positions[id].y + 1}`
+                              : vi.notPlaced}
+                          </small>
+                        </span>
+                      </button>
+                    ))}
                   </div>
-                ))
-              ) : (
-                <p>Trận đấu chuẩn bị bắt đầu…</p>
-              )}
+                  <p>
+                    {vi.reinforcement}: {name(reinforcement)}
+                  </p>
+                </section>
+              </aside>
             </div>
-          </section>
-        </div>
-        <aside className="side-column">
-          <div className="info-card status-card">
-            <span className="eyebrow">THIÊN TAI</span>
-            <h3>
-              {activeHazard
-                ? vi.active
-                : warningHazard
-                  ? vi.upcoming
-                  : upcoming
-                    ? hazardNames[upcoming.id]
-                    : 'Đã qua'}
-            </h3>
-            <p>
-              {activeHazard
-                ? `Còn ${Math.ceil((activeHazard.endTick - playhead) / 10)} giây`
-                : warningHazard
-                  ? `Bắt đầu sau ${Math.ceil((warningHazard.startTick - playhead) / 10)} giây`
-                  : upcoming
-                    ? `Dự kiến ${(upcoming.startTick / 10).toFixed(0)} giây`
-                    : 'Không còn thiên tai trong trận này.'}
-            </p>
-            <div className="hazard-chips">
-              {hazards.map((hazard, index) => (
-                <span key={index}>
-                  {index + 1}. {hazardNames[hazard.id]}
-                </span>
-              ))}
+            <div className="flow-bottom">
+              <button onClick={() => go('team')}>{vi.back}</button>
+              <button className="primary-button" onClick={lock}>
+                {vi.lock} →
+              </button>
             </div>
-          </div>
-          <Team side="A" ids={teamA} />
-          <Team side="B" ids={teamB} />
-          <div className="info-card result-card">
-            <span className="eyebrow">KẾT QUẢ MÔ PHỎNG</span>
-            <h3>
-              {vi.winner}:{' '}
-              {demoResult.winner === 'draw'
-                ? vi.draw
-                : demoResult.winner === 'A'
-                  ? vi.teamA
-                  : vi.teamB}
-            </h3>
-            <p>
-              Điểm A{' '}
-              {Math.round(
-                demoResult.score.A.damageDealt +
-                  demoResult.score.A.healDone * 0.5,
-              ).toLocaleString('vi-VN')}{' '}
-              · Điểm B{' '}
-              {Math.round(
-                demoResult.score.B.damageDealt +
-                  demoResult.score.B.healDone * 0.5,
-              ).toLocaleString('vi-VN')}
-            </p>
-          </div>
-        </aside>
+          </>
+        )}
       </main>
-      <footer>Ngũ Hành Chiến · Bản xem trận nội bộ</footer>
     </div>
   );
 }

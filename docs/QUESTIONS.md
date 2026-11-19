@@ -63,8 +63,38 @@ Trả lời: MVP dùng hiệu ứng chung, áp dụng như nhau cho cả hai đ�
 
 ## Cần quyết định trước khi mở rộng nội dung
 
+**Q25. Nếu cả 5 hàng cột nhà đều bị chiếm khi viện trợ xuất hiện?** Chưa có luật cho trường hợp này. Mã đang tạm đợi tới tick có hàng trống, có `TODO(balance)`; cần duyệt hoặc thay bằng quy tắc khác trước nghiệm thu va chạm đầy đủ.
+
+Q24 đã được người dùng đồng ý trong chat ngày 19/11/2026: áp dụng quy tắc thử nghiệm 0,8 ô, chặn cứng, thứ tự id và hàng trống gần nhất. Triển khai ở rule v0.4.2.
+
+**Q24. Quy tắc va chạm để xử lý chồng quân trong M3?** Người dùng yêu cầu sửa chồng quân ngày 19/11/2026. Q7 đã chốt chặn cứng nhưng chưa có khoảng cách tối thiểu và cách xử lý viện trợ khi vị trí bị chiếm. Đề xuất thử nghiệm, chưa áp dụng: tâm quân cách tối thiểu 0,8 ô hex; bị chặn đứng lại và đánh nếu đủ tầm; tranh vị trí theo id ổn định; viện trợ chọn hàng trống gần nhất trên cột nhà. Chờ người dùng chốt trước khi sửa sim và rule.md. Phân lớp sprite theo chân có thể sửa độc lập ở client.
+
 **Q19. Sau Sân băng, hazard nào nên thêm tiếp và tác động cụ thể ra sao?**
 Gợi ý chưa triển khai: sấm sét làm gián đoạn tích năng lượng, sương mù giảm tầm nhìn/tầm đánh, hoặc động đất thay đổi vị trí quân. Cần chốt mục tiêu, cường độ và tính công bằng giữa hai đội trước khi đưa vào `data/hazards.json`.
 
 **Q20. Map PvP tiếp theo dùng bối cảnh nào và hiệu ứng chung nào?**
 Hai map MVP đã chốt ở Q18. Map hiệu ứng theo vùng được hoãn sau MVP; trước khi làm cần chốt vùng, mức ảnh hưởng và cách hiển thị để người chơi đọc được.
+
+## Ghi nhận yêu cầu mới ngày 18/11/2026
+
+**Q21. Lôi Kiếp tác động thế nào?** Người dùng muốn thêm hazard Lôi Kiếp. Chưa chốt tác động lên ai, tần suất đánh, sát thương/khống chế, thời lượng và cảnh báo. Chỉ đưa vào dữ liệu và sim sau khi chốt; hình ảnh gợi ý là sấm chớp báo trước, điểm rơi rõ để người chơi đọc được.
+
+**Q22. Nghề sát thủ hoạt động theo luật nào?** Người dùng chốt bỏ tên nghề Xạ thủ, thay bằng Tầm xa và thêm Sát thủ có thể ẩn thân/biến ảo hoặc nhảy vọt bắt chủ lực. Cần chốt điều kiện kích hoạt, mục tiêu ưu tiên (ví dụ pháp sư/hỗ trợ hay máu thấp), vị trí đáp, thời lượng ẩn thân, cách bị khắc chế và chỉ số trước khi đưa skill vào sim. Nghề Tầm xa kế thừa hành vi của Xạ thủ hiện có cho đến khi chốt lại.
+
+**Q23. Tên thương hiệu trên logo là `Wanebound — Tân Nguyệt`, còn tên trong game hiện là `Ngũ Hành Chiến`.** Có đổi tên hiển thị game và tài liệu sang Wanebound không? Logo đính kèm đã đưa vào bản thử; nguồn tạo, model và quyền thương mại chưa được cung cấp.
+
+## Cập nhật ngày 19/11/2026
+
+- Q23: đã chốt tên game **Wanebound**, cập nhật UI và tiêu đề trình duyệt.
+- Q25: viện trợ giáng thế ngay khi quân đầu tiên chết, không gây sát thương hay hiệu ứng chiến đấu khi đáp. Chờ chốt vị trí đáp và chọn bất tử 2 giây hay khiên; không tiếp tục coi cách đợi cột nhà là phương án đã duyệt.
+- Q22: sát thủ máu mỏng; ý tưởng active đột kích địch có % HP thấp nhất trong bán kính giới hạn. Chưa có bán kính, vị trí đáp, passive hoặc số liệu nhân vật.
+- Q26: gộp pháp sư và xạ thủ thành ranged; skill độc lập với nghề. Chờ xác nhận tầm mặc định và cách chọn mục tiêu. Roster hiện chưa có ranged nên thay enum không đổi bộ skill hiện hành.
+
+### Đã chốt tiếp ngày 19/11/2026 (thay các phương án chờ duyệt phía trên)
+- Q25: vị trí trống gần quân chết nhất, giáng thế ngay, không gây sát thương/hiệu ứng chiến đấu; bất tử 2 giây. Bỏ đợi cột nhà.
+- Q26: ranged gộp xạ thủ/pháp sư; tầm mặc định 3 ô, địch gần nhất.
+- Q22: duyệt bộ thử nghiệm trong rule.md §16: cận chiến 1 ô; đột kích địch % HP thấp nhất trong 3 ô, 180% ATK; passive +15% sát thương khi địch dưới 50% HP. Chưa có nhân vật và chỉ số cơ bản để triển khai.
+
+**Q27 — đã duyệt 19/11/2026:** Cho tìm đường vòng khi quân chưa đủ tầm và bị đồng đội/địch chặn. Giữ khoảng cách 0,8 ô, không xuyên quân; chỉ đứng chờ khi không có đường. Triển khai tìm đường xác định trên lưới nửa ô, kiểm tra cả đoạn di chuyển.
+
+**Q28 — đã duyệt 19/11/2026:** Giữ mục tiêu hiện tại thêm 0,3 giây (3 tick) khi có mục tiêu gần hơn; đổi ngay nếu mục tiêu cũ chết hoặc bị khiêu khích buộc đổi. Đã cập nhật rule v0.4.5.

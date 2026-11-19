@@ -59,6 +59,7 @@ Ghi chú M2: Trang xem trận seed 42 đọc `Snapshot` từ event log, nội su
 `pnpm test` (13 test), `pnpm typecheck` và Vite build chạy qua. React, PixiJS, Vite theo stack đã chốt; chưa tích hợp sprite và VFX (M3).
 
 ## M3 — Tích hợp art và VFX
+- [x] Đưa logo người dùng cung cấp vào `assets/others/` và bản WebP trong client, hiển thị trên trang xem trận.
 - [x] `tools/export_assets.py`: cắt theo thân, scale theo chiều cao thân, xuất WebP nền trong suốt.
 - [x] Nạp sprite theo `units.json`, neo ở chân, lật ngang cho phe B.
 - [x] Hoạt ảnh tween (đứng, chạy, đánh, trúng đòn, chết, viện trợ xuất hiện) theo `skill_animation.md` §5.
@@ -66,6 +67,7 @@ Ghi chú M2: Trang xem trận seed 42 đọc `Snapshot` từ event log, nội su
 - [x] Giới hạn hạt cho điện thoại.
 - [x] Bàn đấu nền liền mạch, thêm Sân băng và hai map PvP có hiệu ứng chung được chọn theo seed.
 - [ ] Xác nhận hiệu năng trên điện thoại tầm trung thật theo tiêu chí nghiệm thu.
+- [ ] Hoàn thiện chất lượng hình map, sprite, skill/hazard VFX theo checklist chi tiết ở `TODO.md` trước khi nghiệm thu art M3.
 
 **Nghiệm thu:** 5 quái hiện đúng sprite; mỗi active có hiệu ứng nhận ra được hành; hazard có overlay, hiệu ứng và dấu vết; trận chạy ổn định trên điện thoại tầm trung.
 
@@ -73,21 +75,32 @@ Ghi chú M3: Đã xuất 5 bộ WebP thử từ concept, nạp sprite và vẽ p
 Ngưỡng năng lượng tăng lên 200 (rule v0.3.1); bot 300 trận còn 92,7% hết giờ, trung bình 177 giây. Dùng Pillow trong `.venv` riêng cho lệnh export; M3 chưa được xác nhận hiệu năng trên điện thoại tầm trung thật.
 Mở rộng theo Q17–Q18: Sân băng giảm 20% ASPD hai đội trong 6 giây; Hỏa Diệm Sơn +5% sát thương, Thủy Liêm Động +5% hồi máu. Bàn hex nay phủ lên một mặt địa hình liền; đã xem trực tiếp trên preview `15173`.
 Rule v0.4.0; `pnpm test` (18 test), `pnpm typecheck`, lint và Vite build qua. Bot 300 trận: 92,0% hết giờ, trung bình 176,8 giây; cần cân bằng ở M5. Vẫn cần đo hiệu năng trên điện thoại tầm trung thật để khép M3.
+Ghi chú mới: logo Wanebound do người dùng cung cấp đã đưa vào bản thử; đổi nghề `archer` thành `ranged`, thêm định danh `assassin` chưa có luật/nhân vật. Checklist art, VFX, map và lỗi chồng quân được tách chi tiết ở `TODO.md`; Lôi Kiếp chờ Q21.
 
 ## M4 — Khung giao diện game
-- [ ] Router và bố cục responsive.
-- [ ] Màn chọn đội: 3 chính + 1 viện trợ, hiện hành và nghề.
-- [ ] Màn đặt quân: hiện hazard, hẹn giờ, kéo thả vị trí trên nửa sân của mình, nút khóa.
-- [ ] Màn kết quả.
-- [ ] i18n (`vi.ts`).
+
+Ghi chú tiến độ M3 ngày 19/11/2026: thêm hình riêng cho 5 active, 6 hazard và dấu debuff theo đối tượng; sprite sắp lớp theo chân. Chặn cứng 0,8 ô theo Q24 ở rule v0.4.2, dữ liệu trong `data/combat.json`; Q25 còn mở.
+`pnpm test` 21 test, `pnpm typecheck`, Vite build qua. Chưa nghiệm thu hình trực tiếp hoặc điện thoại thật; hai map ảnh đang bị chặn bởi credit fal. Kế hoạch ở `docs/m3-art-production.md`; không đánh dấu hoàn tất art M3.
+- [x] Router và bố cục responsive.
+- [x] Màn chọn đội: 3 chính + 1 viện trợ, hiện hành và nghề.
+- [x] Màn đặt quân: hiện hazard, hẹn giờ, kéo thả vị trí trên nửa sân của mình, nút khóa.
+- [x] Màn kết quả.
+- [x] i18n (`vi.ts`).
+
+Ghi chú M4: Luồng cục bộ dùng hash route chọn đội → đặt quân → xem trận → kết quả; chọn bằng chạm hoặc kéo thả, tự xếp quân còn thiếu khi khóa/hết 30 giây.
+Đã qua test, typecheck, lint và Vite build. Panel web đã mở nhưng localhost bị timeout trong Codex; chưa xác nhận trực quan trên desktop/điện thoại thật, nên nghiệm thu M4 còn chờ.
 
 **Nghiệm thu:** chơi được một trận với bot cục bộ từ chọn đội đến kết quả, trên cả điện thoại và máy tính.
 
 ## M5 — Chất lượng mô phỏng và cân bằng
-- [ ] Va chạm cứng giữa các quân (không đi xuyên hoặc đứng chồng; khi bị chặn thì đứng lại đánh).
-- [ ] Giảm giật khi đổi mục tiêu (trễ chọn lại).
-- [ ] Chạy bot nhiều lượt, ghi báo cáo cân bằng vào `docs/balance_report.md`.
-- [ ] Đề xuất chỉnh số (không tự sửa `rule.md`; gửi đề xuất để người dùng duyệt).
+- [x] Va chạm cứng giữa các quân (không đi xuyên hoặc đứng chồng; khi bị chặn thì đứng lại đánh).
+- [x] Sửa lỗi đã quan sát: nhiều quân vẫn chồng hình/đi xuyên trong bản xem trận; xử lý chặn ở sim và phân lớp hiển thị ở client, kiểm tra cả viện trợ và di chuyển đồng tick.
+- [x] Giảm giật khi đổi mục tiêu (trễ chọn lại).
+- [x] Chạy bot nhiều lượt, ghi báo cáo cân bằng vào `docs/balance_report.md`.
+- [x] Đề xuất chỉnh số (không tự sửa `rule.md`; gửi đề xuất để người dùng duyệt).
+
+Ghi chú M5: Chặn cứng 0,8 ô, tìm đường vòng, phân lớp sprite theo chân; test kiểm tra khoảng cách mọi quân sống suốt trận và vị trí viện trợ. Q28 đã duyệt trễ đổi mục tiêu 3 tick; rule v0.4.5, golden replay cập nhật.
+Bot 300 trận: thắng từng quái 46,4–56,5%, trung bình 176,7 giây, 91,7% hết giờ. Đã đề xuất thử tăng ATK chuẩn 25% trong `balance_report.md`, chưa áp dụng; nghiệm thu thời lượng 60–150 giây chưa đạt.
 
 **Nghiệm thu:** không quân nào có tỉ lệ thắng ngoài khoảng 40-60% khi tính theo từng quái trong bot ngẫu nhiên, hoặc có ghi chú giải thích; trận trung bình kéo dài 60-150 giây.
 
@@ -130,3 +143,12 @@ Rule v0.4.0; `pnpm test` (18 test), `pnpm typecheck`, lint và Vite build qua. B
 - [ ] Bảo mật, giới hạn tần suất, kiểm tra đầu vào, kiểm thử trên điện thoại thật.
 - [ ] Triển khai và theo dõi chi phí hạ tầng.
 - [ ] Điều khoản dịch vụ, chính sách riêng tư.
+
+## Cập nhật quyết định M3 — 19/11/2026
+- [x] Q23: tên hiển thị Wanebound; gộp mage vào ranged.
+- [x] Q25–Q26: viện trợ giáng thế ngay gần quân chết, bất tử 20 tick; ranged ưu tiên địch gần nhất, tầm mặc định 3 ô trong luật.
+Ghi chú: 1 passive + 1 active mỗi nhân vật, loại skill độc lập với nghề. Bộ sát thủ đầu tiên đã duyệt ở rule.md §16, chưa tự tạo chỉ số roster.
+Test viện trợ và golden replay cập nhật cho rule v0.4.3; `pnpm test` (22 test) và `pnpm typecheck` qua. Art M3 và đo điện thoại vẫn chưa hoàn tất.
+
+Ghi chú M3 ngày 19/11/2026: hai map PNG tạo bằng imagegen tích hợp đã thay nền tạm và xem được tại cổng 15173, có link chọn map. Thêm bóng chân, vòng phe phẳng, HP xanh ngọc/đỏ cam, giảm lưới và lọc thu nhỏ sprite.
+Q27: tìm đường vòng đã duyệt và triển khai ở rule v0.4.4; test vòng qua đồng đội và replay xác định qua (23 test). Còn tối ưu map WebP, dọn sprite, kiểm tra tất cả hiệu ứng và hiệu năng điện thoại thật.

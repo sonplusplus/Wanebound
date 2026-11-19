@@ -188,10 +188,11 @@ export function renderVfx(
     );
     const definition = byId.get(skill?.vfx ?? '');
     if (!definition) continue;
-    const center = boardPoint(
-      (target ?? source).position.x,
-      (target ?? source).position.y,
-    );
+    const focus =
+      skill?.id === 'zhen_di' || skill?.id === 'liu_sha_he'
+        ? source
+        : (target ?? source);
+    const center = boardPoint(focus.position.x, focus.position.y);
     const before = event.tick - tick;
     if (before > 0 && before <= definition.telegraph.duration * 10) {
       graphics
@@ -207,6 +208,67 @@ export function renderVfx(
           width: 2,
         });
     } else if (before <= 0 && before >= -5) {
+      const progress = -before / 5;
+      const tint = color(definition.telegraph.color);
+      const opacity = 1 - progress;
+      if (skill?.id === 'jin_gu_bang') {
+        graphics
+          .moveTo(center.x - 28, center.y - 58)
+          .lineTo(center.x + 14, center.y + 16)
+          .stroke({ color: 0xffe9a3, width: 9 * opacity + 1, alpha: opacity });
+        graphics
+          .ellipse(center.x, center.y + 18, 20 + progress * 30, 8)
+          .stroke({ color: tint, width: 3, alpha: opacity });
+      } else if (skill?.id === 'ren_shen_guo') {
+        graphics
+          .ellipse(center.x, center.y + 18, 30, 12)
+          .stroke({ color: 0x9ff3a8, width: 3, alpha: opacity });
+        for (let j = 0; j < 5; j++)
+          graphics
+            .ellipse(center.x - 24 + j * 12, center.y - progress * 65, 5, 10)
+            .fill({ color: tint, alpha: opacity });
+      } else if (skill?.id === 'liu_sha_he') {
+        graphics
+          .ellipse(center.x, center.y - 12, 37 + progress * 8, 48)
+          .stroke({ color: 0x95eaff, width: 4, alpha: opacity });
+        graphics
+          .ellipse(
+            center.x,
+            center.y + 18,
+            38 + progress * 40,
+            15 + progress * 15,
+          )
+          .stroke({ color: tint, width: 3, alpha: opacity });
+      } else if (skill?.id === 'hoa_tiem_thuong') {
+        const start = boardPoint(source.position.x, source.position.y);
+        graphics
+          .moveTo(start.x, start.y - 12)
+          .lineTo(center.x, center.y)
+          .stroke({ color: tint, width: 12 * opacity + 1, alpha: opacity });
+        graphics
+          .moveTo(start.x, start.y - 12)
+          .lineTo(center.x, center.y)
+          .stroke({ color: 0xffeb9a, width: 3, alpha: opacity });
+      } else if (skill?.id === 'zhen_di') {
+        graphics
+          .ellipse(
+            center.x,
+            center.y + 20,
+            15 + progress * 85,
+            8 + progress * 45,
+          )
+          .stroke({ color: tint, width: 6 * opacity + 1, alpha: opacity });
+        for (let j = 0; j < 6; j++) {
+          const a = (j * Math.PI) / 3;
+          graphics
+            .moveTo(center.x, center.y + 20)
+            .lineTo(
+              center.x + Math.cos(a) * progress * 80,
+              center.y + 20 + Math.sin(a) * progress * 40,
+            )
+            .stroke({ color: 0xe8ba74, width: 2, alpha: opacity });
+        }
+      }
       burst(
         graphics,
         definition,

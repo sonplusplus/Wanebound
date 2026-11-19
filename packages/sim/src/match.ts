@@ -2,8 +2,10 @@ import type { Element, GameData, SkillDef, UnitDef } from './data.js';
 import { defaultGameData } from './default-data.js';
 import { hexGrid, type Position } from './grid.js';
 import { SeededRng } from './rng.js';
+import { combat } from './collision.js';
+import { navigate } from './navigation.js';
 
-export const RULE_VERSION = '0.4.0';
+export const RULE_VERSION = '0.4.5';
 export const MAX_ENERGY = 200;
 export type Side = 'A' | 'B';
 export type Winner = Side | 'draw';
@@ -40,6 +42,9 @@ export interface UnitState {
   effects: TimedEffect[];
   alive: boolean;
   reinforcement: boolean;
+  targetId?: string | undefined;
+  targetCandidateId?: string | undefined;
+  targetCandidateSince?: number | undefined;
 }
 export interface HazardSchedule {
   id: string;
@@ -394,6 +399,7 @@ function chooseTarget(
   snapshot: UnitState[],
   unit: UnitState,
 ): UnitState | undefined {
+  const live = state.units.find((item) => item.id === unit.id)!;
   const foe = enemies(snapshot, unit);
   const taunt = unit.effects.find(
     (effect) =>
@@ -405,15 +411,14 @@ function chooseTarget(
           distance(unit, enemy) <= (effect.radius ?? 0),
       ),
   );
-  if (taunt) return foe.find((enemy) => enemy.id === taunt.sourceId);
+  if (taunt) {
+    live.targetId = taunt.sourceId;
+    live.targetCandidateId = undefined;
+    live.targetCandidateSince = undefined;
+    return foe.find((enemy) => enemy.id === taunt.sourceId);
+  }
   const role = defOf(state, unit).role;
-  const candidates =
-    role === 'archer'
-      ? foe.filter(
-          (enemy) =>
-            distance(unit, enemy) <= stat(state, snapshot, unit, 'range'),
-        )
-      : foe;
+  const candidates = foe;
   if (
     role === 'support' &&
     unit.energy >= MAX_ENERGY &&
@@ -429,12 +434,30 @@ function chooseTarget(
         (a, b) => hpPct(state, a) - hpPct(state, b) || a.id.localeCompare(b.id),
       )[0];
   }
-  return candidates.sort(
-    (a, b) =>
-      (role === 'archer'
-        ? hpPct(state, a) - hpPct(state, b)
-        : distance(unit, a) - distance(unit, b)) || a.id.localeCompare(b.id),
+  const nearest = candidates.sort(
+    (a, b) => distance(unit, a) - distance(unit, b) || a.id.localeCompare(b.id),
   )[0];
+  const current = foe.find((enemy) => enemy.id === unit.targetId);
+  if (!nearest || !current || current.id === nearest.id) {
+    live.targetId = nearest?.id;
+    live.targetCandidateId = undefined;
+    live.targetCandidateSince = undefined;
+    return nearest;
+  }
+  if (unit.targetCandidateId !== nearest.id) {
+    live.targetCandidateId = nearest.id;
+    live.targetCandidateSince = state.tick;
+    return current;
+  }
+  if (
+    state.tick - (unit.targetCandidateSince ?? state.tick) <
+    combat.targetRetargetDelayTicks
+  )
+    return current;
+  live.targetId = nearest.id;
+  live.targetCandidateId = undefined;
+  live.targetCandidateSince = undefined;
+  return nearest;
 }
 
 interface Pending {
@@ -766,10 +789,25 @@ function spawnReinforcements(state: MatchState): void {
     const unitId = (side === 'A' ? state.config.lineupA : state.config.lineupB)
       .reinforcement;
     const def = state.data.units.find((item) => item.id === unitId)!;
-    const position = {
-      x: side === 'A' ? 0 : 6,
-      y: Math.round(dead.position.y),
-    };
+    const candidates = [{ ...dead.position }];
+    for (let y = 0; y < 5; y++)
+      for (let x = 0; x < 7; x++) candidates.push({ x, y });
+    candidates.sort(
+      (a, b) =>
+        hexGrid.distance(a, dead.position) -
+          hexGrid.distance(b, dead.position) ||
+        a.y - b.y ||
+        a.x - b.x,
+    );
+    const position = candidates.find((candidate) =>
+      state.units.every(
+        (other) =>
+          !other.alive ||
+          hexGrid.distance(candidate, other.position) >=
+            combat.minimumUnitDistance - 0.000001,
+      ),
+    );
+    if (!position) throw new Error('No valid reinforcement landing position');
     const unit: UnitState = {
       id: `${side}R_${unitId}`,
       unitId,
@@ -779,7 +817,7 @@ function spawnReinforcements(state: MatchState): void {
       shield: 0,
       energy: 0,
       nextAttackTick: state.tick + 1,
-      invulnerableUntil: state.tick + 15,
+      invulnerableUntil: state.tick + combat.reinforcementInvulnerabilityTicks,
       effects: [],
       alive: true,
       reinforcement: true,
@@ -907,11 +945,21 @@ export function step(state: MatchState): void {
     if (!target) continue;
     const range = stat(state, snapshot, unit, 'range');
     if (distance(unit, target) > range) {
-      const newPosition = hexGrid.moveToward(
+      const occupied = [...snapshot, ...state.units]
+        .filter((other) => other.alive && other.id !== unit.id)
+        .map((other) => other.position);
+      const newPosition = navigate(
         unit.position,
         target.position,
+        range,
         stat(state, snapshot, unit, 'spd') / 10,
+        occupied,
       );
+      if (
+        newPosition.x === unit.position.x &&
+        newPosition.y === unit.position.y
+      )
+        continue;
       live.position = newPosition;
       state.events.push({
         tick: state.tick,

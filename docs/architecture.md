@@ -55,7 +55,7 @@ Mỗi sự kiện có `tick` và các id liên quan. Phát lại = `config` + `s
 ## 4. Schema dữ liệu (data/*.json, validate bằng zod khi nạp)
 ```ts
 type Element = 'metal'|'wood'|'water'|'fire'|'earth';
-type Role = 'tank'|'warrior'|'archer'|'mage'|'support';
+type Role = 'tank'|'warrior'|'ranged'|'assassin'|'support';
 
 interface UnitDef {
   id: string; name: string; element: Element; role: Role;

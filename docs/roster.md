@@ -26,10 +26,10 @@ Mỗi quái cần `portrait.webp`, `battle.webp`, `icon.webp` (quy cách ở `ar
 ## 4. Danh sách ứng viên cho các đợt sau
 Chỉ là tên và nghề gợi ý, chưa có chỉ số. Việc gán hành dựa trên hình ảnh gợi nhớ.
 
-- Kim: Lữ Bố (chiến binh), Triệu Vân (chiến binh), Mã Siêu (chiến binh), Hứa Chử (tank), Dương Tiễn (xạ thủ), Kim Giác Đại Vương (pháp sư), Đường Tăng (hỗ trợ), Bạch Hổ (tank), Hạ Hầu Uyên (xạ thủ), Kim Tra (chiến binh)
-- Mộc: Quan Vũ (chiến binh), Hoàng Trung (xạ thủ), Gia Cát Lượng (pháp sư), Hoa Đà (hỗ trợ), Vương Mẫu Nương Nương (hỗ trợ), Thanh Long (tank), Hoàng Nguyệt Anh (pháp sư), Mộc Tra (chiến binh), Thụ Yêu Mộc Tiên Am (pháp sư)
-- Thủy: Tiểu Bạch Long (chiến binh), Ngao Quảng (pháp sư), Huyền Vũ (tank), Tư Mã Ý (pháp sư), Cam Ninh (chiến binh), Linh Cảm Đại Vương (pháp sư), Thiết Phiến Công Chúa (pháp sư), Quan Âm Bồ Tát (hỗ trợ)
-- Hỏa: Chu Du (pháp sư), Lục Tốn (pháp sư), Na Tra (chiến binh), Chúc Dung (xạ thủ), Chu Tước (hỗ trợ), Thái Thượng Lão Quân (hỗ trợ), Trương Phi (tank), Tôn Sách (chiến binh)
-- Thổ: Điển Vi (tank), Mạnh Hoạch (chiến binh), Tào Tháo (pháp sư), Hoàng Phong Quái (pháp sư), Địa Dũng Phu Nhân (chiến binh), Thổ Địa Công (hỗ trợ), Kỳ Lân (tank)
+- Kim: Lữ Bố (chiến binh), Triệu Vân (chiến binh), Mã Siêu (chiến binh), Hứa Chử (tank), Dương Tiễn (tầm xa), Kim Giác Đại Vương (tầm xa), Đường Tăng (hỗ trợ), Bạch Hổ (tank), Hạ Hầu Uyên (tầm xa), Kim Tra (chiến binh)
+- Mộc: Quan Vũ (chiến binh), Hoàng Trung (tầm xa), Gia Cát Lượng (tầm xa), Hoa Đà (hỗ trợ), Vương Mẫu Nương Nương (hỗ trợ), Thanh Long (tank), Hoàng Nguyệt Anh (tầm xa), Mộc Tra (chiến binh), Thụ Yêu Mộc Tiên Am (tầm xa)
+- Thủy: Tiểu Bạch Long (chiến binh), Ngao Quảng (tầm xa), Huyền Vũ (tank), Tư Mã Ý (tầm xa), Cam Ninh (chiến binh), Linh Cảm Đại Vương (tầm xa), Thiết Phiến Công Chúa (tầm xa), Quan Âm Bồ Tát (hỗ trợ)
+- Hỏa: Chu Du (tầm xa), Lục Tốn (tầm xa), Na Tra (chiến binh), Chúc Dung (tầm xa), Chu Tước (hỗ trợ), Thái Thượng Lão Quân (hỗ trợ), Trương Phi (tank), Tôn Sách (chiến binh)
+- Thổ: Điển Vi (tank), Mạnh Hoạch (chiến binh), Tào Tháo (tầm xa), Hoàng Phong Quái (tầm xa), Địa Dũng Phu Nhân (chiến binh), Thổ Địa Công (hỗ trợ), Kỳ Lân (tank)
 
 Đội theo cốt truyện (thưởng nhẹ khi đủ): Ngũ Hổ Tướng, Đoàn thỉnh kinh, cặp Xích Bích (Chu Du + Gia Cát Lượng), bộ ba Kim Tra - Mộc Tra - Na Tra. Chưa thiết kế số liệu.

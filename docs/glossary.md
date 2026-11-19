@@ -7,10 +7,10 @@ Dùng đúng các tên này trong code, dữ liệu và tên file.
 | Kim / Mộc / Thủy / Hỏa / Thổ | `metal` / `wood` / `water` / `fire` / `earth` | enum `Element` |
 | Tương sinh | `generate` | metal → water → wood → fire → earth → metal |
 | Tương khắc | `counter` | metal → wood → earth → water → fire → metal |
-| Nghề | `role` | `tank` `warrior` `archer` `mage` `support` |
+| Nghề | `role` | `tank` `warrior` `ranged` `assassin` `support`; `ranged` gộp xạ thủ và pháp sư, sát thủ chưa có quân/skill trong roster |
 | Quái / tướng / champ | `unit` | định nghĩa trong data là `UnitDef`, thể hiện trong trận là `UnitState` |
 | Viện trợ | `reinforcement` | ô thứ 4 của đội, xuất hiện khi quân chính đầu tiên chết. KHÁC với nghề hỗ trợ |
-| Hỗ trợ (nghề) | `support` | nghề hồi máu và buff |
+| Hỗ trợ (nghề) | `support` | nghề hỗ trợ bằng hồi máu, buff hoặc debuff tùy bộ skill |
 | Đội hình | `lineup` | 3 quái chính + 1 viện trợ + vị trí |
 | Đặt quân | `deployment` | bước đặt vị trí trước trận |
 | Trận | `match` | |

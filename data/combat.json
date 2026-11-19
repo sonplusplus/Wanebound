@@ -1,0 +1,5 @@
+{
+  "minimumUnitDistance": 0.8,
+  "reinforcementInvulnerabilityTicks": 20,
+  "targetRetargetDelayTicks": 3
+}
