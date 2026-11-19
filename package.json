@@ -10,7 +10,8 @@
     "format": "prettier --check eslint.config.mjs package.json tsconfig.base.json packages tools",
     "sim:bot": "tsx tools/sim-bot.ts",
     "godot:export": "node tools/godot-web.mjs export",
-    "godot:preview": "node tools/godot-web.mjs preview"
+    "godot:preview": "node tools/godot-web.mjs preview",
+    "godot:replay": "tsx tools/godot-replay.mts"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
