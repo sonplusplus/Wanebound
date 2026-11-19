@@ -35,6 +35,16 @@ const config: MatchConfig = {
 };
 
 const result = runToEnd(config);
+const unitByInstance = new Map(
+  result.events
+    .filter((event) => event.type === 'Snapshot' && event.units)
+    .flatMap((event) =>
+      event.units!.map((unit) => [unit.id, unit.unitId] as const),
+    ),
+);
+const skillByUnit = new Map(
+  defaultGameData.units.map((unit) => [unit.id, unit.active]),
+);
 const payload = {
   schema: 1,
   version: config.version,
@@ -52,6 +62,24 @@ const payload = {
     element: unit.element,
     maxHp: unit.stats.hp,
   })),
+  events: result.events
+    .filter((event) =>
+      ['Attack', 'Cast', 'Damage', 'Death', 'ReinforcementSpawn'].includes(
+        event.type,
+      ),
+    )
+    .map((event) => ({
+      tick: event.tick,
+      type: event.type,
+      sourceId: event.sourceId ?? '',
+      targetId: event.targetId ?? '',
+      amount: event.amount ?? 0,
+      skillId:
+        event.type === 'Cast'
+          ? (skillByUnit.get(unitByInstance.get(event.sourceId ?? '') ?? '') ??
+            '')
+          : '',
+    })),
   frames: result.events
     .filter((event) => event.type === 'Snapshot' && event.units)
     .map((event) => ({
