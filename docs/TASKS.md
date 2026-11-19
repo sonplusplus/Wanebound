@@ -116,7 +116,10 @@ Quyết định và rà soát M0–M5: `docs/godot-migration.md`. Làm từng m�
 Ghi chú M5G-1: Đã chốt Godot Engine bản thường + GDScript xuất web, ưu tiên trình duyệt máy tính rồi trình duyệt điện thoại; giữ sim TypeScript và bản PixiJS để đối chiếu.
 `docs/godot-migration.md` phân loại phần kế thừa và phần phải dựng lại; `pnpm dev` của Vite dùng cổng 15173 có `strictPort`. Chưa tạo project Godot hay nghiệm thu chất lượng mới.
 
-- [ ] Tạo project Godot tối thiểu, cấu hình xuất web và phục vụ bản xuất ở local 15173. Kiểm tra mở được trên trình duyệt máy tính.
+- [x] Tạo project Godot tối thiểu, cấu hình xuất web và phục vụ bản xuất ở local 15173. Kiểm tra mở được trên trình duyệt máy tính.
+
+Ghi chú M5G-2: Đã tạo project Godot 4.7.2 bản thường với GDScript, Compatibility renderer và preset Web không dùng thread; bản xuất chạy qua `pnpm godot:export` và `pnpm godot:preview` trên cổng 15173, không thêm thư viện.
+Đã mở bản xuất trong panel web desktop và xác nhận màn khung cùng chữ Việt hiển thị; chưa dựng replay, bàn đấu, quân, skill hoặc hazard. `pnpm test` (27 test), `pnpm typecheck`, lint và Prettier đều qua; giữ nguyên `packages/sim` và `docs/rule.md`.
 - [ ] Xuất một replay cố định từ `packages/sim` sang định dạng Godot đọc được; dựng bàn 7×5, quân, thanh trạng thái, map/hazard và nội suy theo tick. Kiểm tra cùng replay cho cùng kết quả hiển thị.
 - [ ] Làm một trận mẫu với 5 quân hiện có, animation đứng/chạy/đánh/trúng đòn/chết/viện trợ; 5 active và 6 hazard có telegraph, impact, aftermath đọc rõ ở 1×. Kiểm tra trực quan và ghi các asset cần làm lại.
 - [ ] Chuyển luồng chọn đội → đặt quân → trận → kết quả và toàn bộ chữ Việt; xác định giao tiếp với sim/server cho trận tương tác mà không để Godot quyết định kết quả.

@@ -4,6 +4,8 @@ __pycache__/
 *.pyc
 .pnpm-store/
 dist/
+godot/.godot/
+godot/build/web/
 coverage/
 reports/
 *.tsbuildinfo

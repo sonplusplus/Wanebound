@@ -8,7 +8,9 @@
     "typecheck": "pnpm -r --if-present typecheck && tsc --project tools/tsconfig.json",
     "lint": "eslint .",
     "format": "prettier --check eslint.config.mjs package.json tsconfig.base.json packages tools",
-    "sim:bot": "tsx tools/sim-bot.ts"
+    "sim:bot": "tsx tools/sim-bot.ts",
+    "godot:export": "node tools/godot-web.mjs export",
+    "godot:preview": "node tools/godot-web.mjs preview"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
