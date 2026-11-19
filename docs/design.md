@@ -1,7 +1,7 @@
 # Design v0.2 — Wanebound (Tây Du / Hồng Hoang)
 
 ## 1. Tổng quan
-Game web tactical thời gian thực trên bàn cờ hex lục giác. Người chơi chọn đội (3 quái chính + 1 viện trợ) và đặt quân; trận bắt đầu thì quái tự đánh. Lõi chiến thuật là ngũ hành (sinh/khắc) kết hợp nghề, vị trí đặt quân và hazard báo trước. Có sưu tầm quái bằng gacha, đi ải PvE có cốt truyện và PvP xếp hạng. Free-to-play, không bán sức mạnh. Nền web, responsive (máy tính và trình duyệt điện thoại).
+Game web tactical thời gian thực trên bàn cờ hex lục giác. Người chơi chọn đội (3 quái chính + 1 viện trợ) và đặt quân; trận bắt đầu thì quái tự đánh. Lõi chiến thuật là ngũ hành (sinh/khắc) kết hợp nghề, vị trí đặt quân và hazard báo trước. Có sưu tầm quái bằng gacha, đi ải PvE có cốt truyện và PvP xếp hạng. Free-to-play, không bán sức mạnh. Nền web: ưu tiên trình duyệt máy tính, sau đó tối ưu trình duyệt điện thoại. Quyết định chuyển client sang Godot ở `godot-migration.md`.
 
 Cảm hứng cấu trúc: *Tactical Monsters Rumble Arena* (trận ngắn, vị trí quan trọng), nhưng đây là thời gian thực và tự đánh, không theo lượt.
 

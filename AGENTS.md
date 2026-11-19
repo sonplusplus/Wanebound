@@ -19,7 +19,12 @@ Game web tactical thời gian thực: người chơi chọn đội (3 quái chí
 - Giữ thay đổi nhỏ, commit theo từng mục TASKS.
 
 ## Stack
-Node LTS, pnpm workspaces, TypeScript strict, Vitest. Client: Vite + React + PixiJS. Server: Node + WebSocket (thư viện chốt ở M7). Chi tiết: `docs/architecture.md`.
+Node LTS, pnpm workspaces, TypeScript strict, Vitest. Lõi mô phỏng: `packages/sim`. Client đích: Godot Engine bản thường, GDScript, xuất web; ưu tiên trình duyệt máy tính rồi trình duyệt điện thoại. Client Vite + React + PixiJS hiện có là bản thử để đối chiếu trong quá trình chuyển dịch. Server: Node + WebSocket (thư viện chốt ở M7). Chi tiết: `docs/architecture.md` và `docs/godot-migration.md`.
+
+## Chuyển dịch Godot
+- Làm từng mục theo mốc Godot trong `docs/TASKS.md`; giữ lịch sử M0–M5 và không coi các dấu `[x]` của client PixiJS là nghiệm thu cho Godot.
+- Godot chỉ hiển thị trận từ dữ liệu/event do sim hoặc server tạo; không viết lại luật chiến đấu trong GDScript.
+- Preview web local dùng `http://localhost:15173`; không để Vite và preview Godot chiếm cổng này cùng lúc.
 
 ## Lệnh
 `pnpm install` · `pnpm dev` · `pnpm test` · `pnpm typecheck` · `pnpm sim:bot -- --n 300`

@@ -15,11 +15,12 @@ ngu-hanh/
     ui/               hình giao diện dùng chung
   packages/
     sim/           lõi chiến đấu, TypeScript thuần
-    client/        Vite + React + PixiJS
+    client/        Vite + React + PixiJS (bản thử hiện có, giữ để đối chiếu)
       public/units/<id>/  portrait.webp battle.webp icon.webp
       public/vfx/  public/maps/
       src/
     server/        Node + WebSocket + DB
+  godot/           client Godot Engine/GDScript xuất web (sẽ tạo theo TASKS)
 ```
 
 ## 2. Lõi mô phỏng (packages/sim)
@@ -46,11 +47,13 @@ Sim phát sự kiện theo tick để client hiển thị và để phát lại:
 Mỗi sự kiện có `tick` và các id liên quan. Phát lại = `config` + `seed` + `version`, chạy lại sim.
 
 ## 3. Client
-- PixiJS vẽ bàn đấu từ snapshot (nội suy giữa 2 tick), React làm giao diện (chọn đội, đặt quân, gacha, cửa hàng).
+- Đích chuyển dịch: Godot Engine bản thường + GDScript xuất web, ưu tiên trình duyệt máy tính rồi trình duyệt điện thoại. Quyết định, thứ tự chuyển và điều kiện đối chiếu nằm ở `godot-migration.md`.
+- Client hiện có: PixiJS vẽ bàn đấu từ snapshot (nội suy giữa 2 tick), React làm giao diện (chọn đội, đặt quân, gacha, cửa hàng). Giữ làm bản tham chiếu cho đến khi Godot đạt tiêu chí thay thế.
 - Hiển thị tách khỏi logic: client không tự tính sát thương.
-- Hoạt ảnh nhân vật bằng tween trên sprite tĩnh; hiệu ứng skill và hazard bằng particle theo `data/vfx.json` (xem `skill_animation.md`).
+- Hoạt ảnh/VFX hiện có dùng tween trên sprite tĩnh và particle theo `data/vfx.json` (xem `skill_animation.md`); thiết kế cảnh Godot cần đánh giá lại chất lượng asset và cách thể hiện.
 - Responsive: bàn đấu co theo chiều rộng, giữ tỉ lệ 7:5.
-- Chữ hiển thị nằm trong `src/i18n/vi.ts`.
+- Chữ hiển thị hiện có nằm trong `packages/client/src/i18n/vi.ts`; khi chuyển UI phải giữ cùng nội dung tiếng Việt.
+- Preview web local ở cổng `15173`. Chỉ chạy một client trên cổng này tại một thời điểm.
 
 ## 4. Schema dữ liệu (data/*.json, validate bằng zod khi nạp)
 ```ts

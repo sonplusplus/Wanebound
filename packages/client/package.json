@@ -15,7 +15,7 @@
     "vite": "^7.0.0"
   },
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --port 15173 --strictPort",
     "typecheck": "tsc --project tsconfig.json"
   }
 }

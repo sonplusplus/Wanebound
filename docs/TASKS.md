@@ -1,6 +1,6 @@
 # TASKS — việc cần làm theo mốc
 
-Quy tắc: làm đúng một mục mỗi lần, theo thứ tự. Đọc tiêu chí nghiệm thu trước khi code. Xong thì đánh dấu `[x]` và ghi 2-3 dòng ghi chú dưới mục. Gặp luật thiếu hoặc mâu thuẫn: dừng và ghi vào `QUESTIONS.md`.
+Quy tắc: làm đúng một mục mỗi lần, theo thứ tự. Đọc tiêu chí nghiệm thu trước khi code. Xong thì đánh dấu `[x]` và ghi 2-3 dòng ghi chú dưới mục. Gặp luật thiếu hoặc mâu thuẫn: dừng và ghi vào `QUESTIONS.md`. Từ 20/11/2026, ưu tiên mốc chuyển client Godot dưới đây trước M6; các dấu `[x]` của M2–M4 là lịch sử bản PixiJS, không phải nghiệm thu Godot.
 
 ## Việc của người dùng (không giao agent)
 - Ảnh nguồn đã nhận ngày 18/11/2026: `zhenyuan`, `sha_wujing`, `bull_demon`, `ne_zha`, `sun_wukong` nằm trong `assets/characters/<id>/concept.png`. Vẫn cần xử lý nền và xuất WebP để dùng trong trận.
@@ -106,6 +106,23 @@ Sửa tiếp Na Tra đặt sau đồng đội: lưới tìm đường tăng lên
 Q29 đã duyệt: Ngộ Không HP 3.400/ATK 82/DEF 24 ở rule v0.4.8. Bot 300 trận cùng seed: thắng Ngộ Không 48,1%, Na Tra 46,6%; trận trung bình 175,9 giây, vẫn chưa đạt tiêu chí thời lượng M5. Chi tiết trong `balance_report.md`.
 
 **Nghiệm thu:** không quân nào có tỉ lệ thắng ngoài khoảng 40-60% khi tính theo từng quái trong bot ngẫu nhiên, hoặc có ghi chú giải thích; trận trung bình kéo dài 60-150 giây.
+
+## M5G — Chuyển client web sang Godot
+
+Quyết định và rà soát M0–M5: `docs/godot-migration.md`. Làm từng mục theo thứ tự, không gộp nhiều mục trong một lần triển khai. Cổng preview local `http://localhost:15173`.
+
+- [x] Ghi quyết định nền tảng, đối chiếu task cũ và cố định cổng dev hiện có ở 15173.
+
+Ghi chú M5G-1: Đã chốt Godot Engine bản thường + GDScript xuất web, ưu tiên trình duyệt máy tính rồi trình duyệt điện thoại; giữ sim TypeScript và bản PixiJS để đối chiếu.
+`docs/godot-migration.md` phân loại phần kế thừa và phần phải dựng lại; `pnpm dev` của Vite dùng cổng 15173 có `strictPort`. Chưa tạo project Godot hay nghiệm thu chất lượng mới.
+
+- [ ] Tạo project Godot tối thiểu, cấu hình xuất web và phục vụ bản xuất ở local 15173. Kiểm tra mở được trên trình duyệt máy tính.
+- [ ] Xuất một replay cố định từ `packages/sim` sang định dạng Godot đọc được; dựng bàn 7×5, quân, thanh trạng thái, map/hazard và nội suy theo tick. Kiểm tra cùng replay cho cùng kết quả hiển thị.
+- [ ] Làm một trận mẫu với 5 quân hiện có, animation đứng/chạy/đánh/trúng đòn/chết/viện trợ; 5 active và 6 hazard có telegraph, impact, aftermath đọc rõ ở 1×. Kiểm tra trực quan và ghi các asset cần làm lại.
+- [ ] Chuyển luồng chọn đội → đặt quân → trận → kết quả và toàn bộ chữ Việt; xác định giao tiếp với sim/server cho trận tương tác mà không để Godot quyết định kết quả.
+- [ ] Nghiệm thu bản web trên trình duyệt máy tính: chất lượng hình/skill, điều khiển, thời gian tải, FPS và replay. Sau đó tối ưu và đo trên trình duyệt điện thoại thật.
+
+**Nghiệm thu mốc:** chơi được một trận từ chọn đội tới kết quả trên web; hiển thị khớp event/kết quả của sim; animation và skill được người dùng xem trực tiếp; bản desktop đạt trước khi chốt mobile.
 
 ## M6 — Vòng chơi PvE (cục bộ)
 - [ ] `stages.json`, chương 1 với khoảng 10 ải và 2 boss.
